@@ -1,10 +1,22 @@
 version: '3'
 
 services:
+  # RabbitMQ for microservice communication
+  ud-rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 15671:15671
+      - 5672:5672
+
   # GateKeeper microservice 
-  gatekeeper-ms:
+  ud-gatekeeper-ms:
     image: gatekeeper-ms
-    container_name: gatekeeper-ms
+    container_name: ud-gatekeeper-ms
+    depends_on:
+      - ud-rabbitmq
     build:
       context: ./gatekeeper-ms
       target: debug
@@ -13,9 +25,11 @@ services:
     restart: on-failure
 
   # GateKeeper API 
-  gatekeeper:
+  ud-gatekeeper:
     image: gatekeeper
-    container_name: gatekeeper
+    container_name: ud-gatekeeper
+    depends_on:
+      - ud-rabbitmq
     build:
       context: ./gatekeeper
       target: debug
