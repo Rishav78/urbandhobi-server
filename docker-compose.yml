@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  # GateKeeper microservice 
+  gatekeeper-ms:
+    image: gatekeeper-ms
+    container_name: gatekeeper-ms
+    build:
+      context: ./gatekeeper-ms
+      target: debug
+    volumes:
+      - ./gatekeeper-ms:/app
+    restart: on-failure
+
+  # GateKeeper API 
+  gatekeeper:
+    image: gatekeeper
+    container_name: gatekeeper
+    build:
+      context: ./gatekeeper
+      target: debug
+    volumes:
+      - ./gatekeeper:/app
+    ports: 
+      - 3000:3000
+    restart: on-failure
