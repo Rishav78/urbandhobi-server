@@ -5,4 +5,4 @@ import { AuthModule } from './modules';
 @Module({
   imports: [MongooseModule.forRoot(process.env.MONGODB_URL), AuthModule],
 })
-export class AppModule {}
+export class V1Module {}
