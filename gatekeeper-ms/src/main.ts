@@ -11,7 +11,9 @@ async function bootstrap() {
       transport: Transport.RMQ,
       options: {
         urls: [process.env.RABBITMQ_URL],
-        queue: 'gate_keeper_queue',
+        queue: 'ud_gate_keeper_queue',
+        noAck: false,
+        persistent: true,
         queueOptions: {
           durable: false,
         },

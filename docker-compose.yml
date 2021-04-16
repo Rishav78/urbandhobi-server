@@ -1,6 +1,15 @@
 version: '3'
 
 services:
+
+  # MongoDB
+  ud-mongodb:
+    image: mongo
+    volumes:
+      - ./mongodb:/var/mongo/data
+    ports:
+      - "27017:27017"
+
   # API Gateway
   # Proxies requests to internal service
   ud-gateway:
@@ -9,12 +18,13 @@ services:
     depends_on: 
       - ud-gatekeeper-ms
       - ud-gatekeeper
+      - ud-mongodb
     build:
       context: ./gateway
     volumes: 
       - ./gateway:/var/log/nginx/
     ports: 
-      - 80:80
+      - "80:80"
 
   # RabbitMQ for microservice communication
   ud-rabbitmq:
@@ -23,9 +33,9 @@ services:
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
     ports:
-      - 15672:15672
-      - 15671:15671
-      - 5672:5672
+      - "15672:15672"
+      - "15671:15671"
+      - "5672:5672"
 
   # GateKeeper microservice 
   ud-gatekeeper-ms:
@@ -33,6 +43,7 @@ services:
     container_name: ud-gatekeeper-ms
     depends_on:
       - ud-rabbitmq
+      - ud-mongodb
     build:
       context: ./gatekeeper-ms
       target: debug
@@ -47,11 +58,12 @@ services:
     depends_on:
       - ud-rabbitmq
       - ud-gatekeeper-ms
+      - ud-mongodb
     build:
       context: ./gatekeeper
       target: debug
     volumes:
       - ./gatekeeper:/app
     ports: 
-      - 3000:3000
+      - "3000:3000"
     restart: on-failure
