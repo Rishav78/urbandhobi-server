@@ -1,9 +1,25 @@
 version: '3'
 
 services:
+  # API Gateway
+  # Proxies requests to internal service
+  ud-gateway:
+    image: ud-gateway
+    container_name: ud-gateway
+    depends_on: 
+      - ud-gatekeeper-ms
+      - ud-gatekeeper
+    build:
+      context: ./gateway
+    volumes: 
+      - ./gateway:/var/log/nginx/
+    ports: 
+      - 80:80
+
   # RabbitMQ for microservice communication
   ud-rabbitmq:
     image: rabbitmq:3-management
+    container_name: ud-rabbitmq
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
     ports:
@@ -26,10 +42,11 @@ services:
 
   # GateKeeper API 
   ud-gatekeeper:
-    image: gatekeeper
+    image: ud-gatekeeper
     container_name: ud-gatekeeper
     depends_on:
       - ud-rabbitmq
+      - ud-gatekeeper-ms
     build:
       context: ./gatekeeper
       target: debug
