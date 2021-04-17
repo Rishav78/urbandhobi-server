@@ -64,7 +64,7 @@ export class TokenManager {
     }
   }
 
-  public async signRefresh(obj: SignRefreshArgs) {
+  public async signRefresh(obj: SignRefreshArgs): Promise<Token> {
     const exp = this.refreshExp;
     const iat = new Date().getTime();
     const payload: RefreshTokenPayload = { ...obj };
