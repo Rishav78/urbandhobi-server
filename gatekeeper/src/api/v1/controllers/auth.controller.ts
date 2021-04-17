@@ -7,6 +7,7 @@ import {
   Put,
   Headers,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { handleMSError } from 'src/lib/helpers';
@@ -15,6 +16,7 @@ import { SignInWithEmailDTO, SignUpWithEmailDTO } from '../dto/auth.dto';
 
 @Controller('')
 export class AuthController {
+  private readonly logger = new Logger('auth-controller-v1', true);
   constructor(
     @Inject('AUTHENTICATION_SERVICE') private readonly authClient: ClientProxy,
   ) {}
@@ -23,6 +25,7 @@ export class AuthController {
   public async signInWithEmail(
     @Body(new ValidationPipe()) { email, password }: SignInWithEmailDTO,
   ) {
+    this.logger.log('user hit at v1/signin');
     try {
       const token = await this.authClient
         .send('UD.GateKeeper.SignInWithEmail', {
