@@ -2,9 +2,19 @@ version: '3'
 
 services:
 
-  # MongoDB
+  # Postgres Database
+  ud-postgres:
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - ./postgres/database.env # configure postgres
+    ports:
+      - "54321:5432"
+    volumes:
+      - ./postgres:/var/lib/ud-postgresql/data/ # persist data even if container shuts down
+
+  # Mongo Database
   ud-mongodb:
-    image: mongo
+    image: "mongo"
     volumes:
       - ./mongodb:/var/mongo/data
     ports:
