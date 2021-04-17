@@ -69,3 +69,36 @@ services:
     ports: 
       - "3000:3000"
     restart: on-failure
+
+  # User microservice 
+  ud-user-ms:
+    image: user-ms
+    container_name: ud-user-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-mongodb
+    build:
+      context: ./user-ms
+      target: debug
+    volumes:
+      - ./user-ms:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # User API 
+  ud-user:
+    image: ud-user
+    container_name: ud-user
+    depends_on:
+      - ud-rabbitmq
+      - ud-user-ms
+      - ud-mongodb
+    build:
+      context: ./user
+      target: debug
+    volumes:
+      - ./user:/app
+      - /app/node_modules
+    ports: 
+      - "3001:3000"
+    restart: on-failure
