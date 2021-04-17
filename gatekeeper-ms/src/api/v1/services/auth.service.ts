@@ -30,4 +30,17 @@ export class AuthService {
       throw error;
     }
   }
+
+  /**
+   * TODO
+   * -- Create different serivce for email, phone and username
+   */
+  public async findById(id: string) {
+    try {
+      const user = await this.EmailModel.findById(id);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
