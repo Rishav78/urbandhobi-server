@@ -19,7 +19,7 @@ export class AuthEmailController {
   constructor(
     private readonly emailService: AuthEmailService,
     private readonly jwtService: TokenManager,
-    @Inject('AUTHENTICATION_SERVICE') private readonly userClient: ClientProxy,
+    @Inject('USER_SERVICE') private readonly userClient: ClientProxy,
   ) {}
 
   @UseFilters(new ExceptionFilter())
