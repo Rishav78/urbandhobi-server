@@ -1,6 +1,9 @@
 # for development
 FROM node:latest as debug
 
+RUN npm config set registry http://registry.npmjs.org/
+RUN npm install -g npm
+
 WORKDIR /app
 
 COPY . /app

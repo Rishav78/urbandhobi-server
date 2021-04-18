@@ -1,5 +1,6 @@
-import { Controller, UseFilters } from '@nestjs/common';
+import { Controller, Inject, UseFilters } from '@nestjs/common';
 import {
+  ClientProxy,
   Ctx,
   MessagePattern,
   Payload,
@@ -18,6 +19,7 @@ export class AuthEmailController {
   constructor(
     private readonly emailService: AuthEmailService,
     private readonly jwtService: TokenManager,
+    @Inject('AUTHENTICATION_SERVICE') private readonly userClient: ClientProxy,
   ) {}
 
   @UseFilters(new ExceptionFilter())
@@ -31,6 +33,7 @@ export class AuthEmailController {
 
     try {
       const tokens = this.emailService.signIn(email, password);
+      this.userClient.emit('UD.User.Create', { email });
       return tokens;
     } catch (error) {
       throw error;
