@@ -1,5 +1,5 @@
 import './lib/env';
-
+//192.168.65.0/24
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestFactory } from '@nestjs/core';
