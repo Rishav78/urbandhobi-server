@@ -33,7 +33,6 @@ export class AuthEmailController {
 
     try {
       const tokens = this.emailService.signIn(email, password);
-      this.userClient.emit('UD.User.Create', { email });
       return tokens;
     } catch (error) {
       throw error;
@@ -56,8 +55,11 @@ export class AuthEmailController {
           new HttpException('user with this email already exist', 409),
         );
       }
-
+      // generate token
       const tokens = await this.emailService.create(email, password);
+      
+      // notify user creation to user microservice
+      this.userClient.emit('UD.User.Create', { email });
 
       return tokens;
     } catch (error) {
