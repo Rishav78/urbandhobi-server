@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { CartModule } from './cart.module';
 
 @Module({
-  imports: [],
+  imports: [CartModule],
 })
 export class V1Module {}

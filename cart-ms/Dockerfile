@@ -3,8 +3,8 @@ FROM node:latest as debug
 
 WORKDIR /app
 
-RUN npm config delete proxy
-RUN npm config delete https-proxy
+RUN npm config rm proxy
+RUN npm config rm https-proxy
 
 COPY . /app
 
