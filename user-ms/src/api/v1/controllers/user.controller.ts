@@ -1,5 +1,6 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
+import { Controller, Inject, ValidationPipe } from '@nestjs/common';
 import {
+  ClientProxy,
   Ctx,
   MessagePattern,
   Payload,
@@ -10,7 +11,10 @@ import { UserService } from '../services/user.service';
 
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
+  ) {}
 
   @MessagePattern('UD.User.Create')
   public async create(
@@ -22,6 +26,7 @@ export class UserController {
     try {
       const id = await this.userService.create({ email });
       const user = await this.userService.findById(id);
+      this.cartClient.emit<string, { id: string }>('UD.Cart.Create', { id });
       return user;
     } catch (error) {
       throw error;

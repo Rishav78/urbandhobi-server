@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity()
@@ -12,6 +13,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index()
   @Column('text', { nullable: false })
   email: string;
 
