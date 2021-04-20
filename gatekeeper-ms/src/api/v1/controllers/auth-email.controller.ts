@@ -13,6 +13,7 @@ import { SignInWithEmailDTO, SignUpWithEmailDTO } from '../dto/auth.dto';
 import { AuthEmailService } from '../services';
 import { HttpException } from 'src/lib/helpers';
 import { TokenManager } from 'src/lib/utils/token-manager';
+import { Authentication } from '../typings';
 
 @Controller()
 export class AuthEmailController {
@@ -57,7 +58,7 @@ export class AuthEmailController {
       }
       // generate token
       const tokens = await this.emailService.create(email, password);
-      
+
       // notify user creation to user microservice
       this.userClient.emit('UD.User.Create', { email });
 
@@ -102,9 +103,17 @@ export class AuthEmailController {
       if (!payload) {
         return null;
       }
+
       switch (payload.method) {
-        case 'email':
-          return this.emailService.findById(payload.id);
+        case 'email': {
+          const auth = await this.emailService.findById(payload.id);
+          const user = await this.userClient
+            .send('UD.User.FindByEmail', auth.email)
+            .toPromise();
+          return user;
+        }
+        default:
+          throw new HttpException('invalid login method', 500);
       }
       return null;
     } catch (error) {

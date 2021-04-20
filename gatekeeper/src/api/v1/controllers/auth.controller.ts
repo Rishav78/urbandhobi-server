@@ -75,4 +75,24 @@ export class AuthController {
       throw error;
     }
   }
+
+  @Get('currentuser')
+  public async currentUser(@Headers('Authorization') auth: string) {
+    try {
+      if (!auth) {
+        throw new UnauthorizedException('unauthorized');
+      }
+      const [bearer, token] = auth.split(' ');
+      if (bearer !== 'Bearer' || !token) {
+        throw new UnauthorizedException('unauthorized');
+      }
+      const user = await this.authClient
+        .send('UD.GateKeeper.CurrentUser', token)
+        .toPromise();
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
