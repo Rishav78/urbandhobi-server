@@ -1,6 +1,12 @@
 import { Controller, ValidationPipe } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { AddAddressDTO } from '../dto';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
+import { AddAddressDTO, FindByIdDTO } from '../dto';
 import { AddressService } from '../services';
 
 @Controller()
@@ -29,7 +35,7 @@ export class AddressController {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
-      await this.addressService.add({
+      const id = await this.addressService.add({
         city,
         country,
         countryCode,
@@ -43,6 +49,25 @@ export class AddressController {
         title,
         userId,
       });
+      const address = this.addressService.findById(id);
+      return address;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @MessagePattern('UD.Address.FindByUserId')
+  public async findById(
+    @Payload(ValidationPipe) { userId }: FindByIdDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const addresses = await this.addressService.findByUserId(userId);
+      return addresses;
     } catch (error) {
       throw error;
     } finally {

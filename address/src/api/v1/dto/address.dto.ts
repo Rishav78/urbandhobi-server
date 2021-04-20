@@ -6,9 +6,6 @@ export class AddAddressDTO {
   @IsString()
   title: string;
 
-  @IsUUID('4', { message: 'provide a valid user id' })
-  userId: string;
-
   @IsEmail({}, { message: 'provide a valid email' })
   email: string;
 
@@ -43,5 +40,5 @@ export class AddAddressDTO {
 
 export class FindByIdDTO {
   @IsUUID('4', { message: 'invalid user id' })
-  userId: string;
+  id: string;
 }
