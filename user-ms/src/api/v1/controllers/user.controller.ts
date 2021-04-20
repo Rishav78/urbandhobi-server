@@ -34,4 +34,21 @@ export class UserController {
       channel.ack(originalMsg);
     }
   }
+
+  @MessagePattern('UD.User.FindByEmail')
+  public async findByEmail(
+    @Payload(ValidationPipe) { email }: CreateUserDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const user = await this.userService.findByEmail(email);
+      return user;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
 }
