@@ -116,3 +116,36 @@ services:
     ports: 
       - "3001:3000"
     restart: on-failure
+
+  # Address API 
+  ud-address:
+    image: ud-address
+    container_name: ud-address
+    depends_on:
+      - ud-rabbitmq
+      - ud-address-ms
+      - ud-mongodb
+    build:
+      context: ./address
+      target: debug
+    volumes:
+      - ./address:/app
+      - /app/node_modules
+    ports: 
+      - "3001:3000"
+    restart: on-failure
+
+  # Address microservice 
+  ud-address-ms:
+    image: address-ms
+    container_name: ud-address-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-mongodb
+    build:
+      context: ./address-ms
+      target: debug
+    volumes:
+      - ./address-ms:/app
+      - /app/node_modules
+    restart: on-failure
