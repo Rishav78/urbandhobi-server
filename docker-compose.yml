@@ -148,4 +148,35 @@ services:
     volumes:
       - ./address-ms:/app
       - /app/node_modules
+  # Cart microservice 
+  ud-cart-ms:
+    image: cart-ms
+    container_name: ud-cart-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-mongodb
+    build:
+      context: ./cart-ms
+      target: debug
+    volumes:
+      - ./cart-ms:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # Cart API 
+  ud-cart:
+    image: ud-cart
+    container_name: ud-cart
+    depends_on:
+      - ud-rabbitmq
+      - ud-cart-ms
+      - ud-mongodb
+    build:
+      context: ./cart
+      target: debug
+    volumes:
+      - ./cart:/app
+      - /app/node_modules
+    ports: 
+      - "3002:3000"
     restart: on-failure
