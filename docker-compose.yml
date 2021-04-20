@@ -4,12 +4,16 @@ services:
 
   # Postgres Database
   ud-postgres:
-    image: "postgres" # use latest official postgres version
+    image: "ud-postgres" # use latest official postgres version
+    container_name: ud-postgres
     env_file:
       - ./postgres/database.env # configure postgres
+    build:
+      context: ./postgres
     ports:
       - "54321:5432"
     volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
       - ./postgres:/var/lib/ud-postgresql/data/ # persist data even if container shuts down
 
   # Mongo Database
