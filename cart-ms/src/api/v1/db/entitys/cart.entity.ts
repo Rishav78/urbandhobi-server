@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { Cart as CartT } from '../../typings';
+import { Status } from '../../typings/cart';
 
 @Entity()
 export class Cart {
@@ -25,7 +25,7 @@ export class Cart {
     nullable: false,
     default: 'pending',
   })
-  status: CartT.Status;
+  status: Status;
 
   @CreateDateColumn()
   createdAt: Date;

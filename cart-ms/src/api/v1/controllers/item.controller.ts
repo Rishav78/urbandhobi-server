@@ -7,8 +7,8 @@ import { ItemService } from '../services';
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
-  @EventPattern('UD.Cart.Item.Create')
-  public async createCart(
+  @EventPattern('UD.Cart.Item.Add')
+  public async add(
     @Payload(ValidationPipe)
     { itemId, count, serviceTypeId, serviceId, cartId, userId }: AddItemDTO,
     @Ctx() context: RmqContext,

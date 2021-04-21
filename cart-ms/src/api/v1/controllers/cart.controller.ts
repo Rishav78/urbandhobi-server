@@ -8,7 +8,7 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @EventPattern('UD.Cart.Create')
-  public async createCart(
+  public async create(
     @Payload(ValidationPipe) { id: userId, name }: CreateCartDTO,
     @Ctx() context: RmqContext,
   ) {
@@ -17,6 +17,23 @@ export class CartController {
     try {
       const id = await this.cartService.create({ userId, name });
       return id;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Cart.FindByUserId')
+  public async findByUserId(
+    @Payload(ValidationPipe) userId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const cart = this.cartService.findByUserId(userId);
+      return cart;
     } catch (error) {
       throw error;
     } finally {
