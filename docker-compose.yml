@@ -147,5 +147,5 @@ services:
       - ./cloth:/app
       - /app/node_modules
     ports: 
-      - "3001:3000"
+      - "3003:3000"
     restart: on-failure
