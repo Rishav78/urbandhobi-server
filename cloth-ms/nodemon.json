@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "src/api/v1/db/migrations/*.ts",
+    "src/api/v1/db/seeds/*.ts",
+    "src/data"
+  ]
+}

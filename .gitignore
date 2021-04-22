@@ -3,3 +3,4 @@ rabbitmq
 
 # ENV files
 /postgres/database.env
+.env
