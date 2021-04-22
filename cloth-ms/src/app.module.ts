@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { V1Module } from './api/v1/modules';
+import { ClothModule, V1Module } from './api/v1/modules';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
