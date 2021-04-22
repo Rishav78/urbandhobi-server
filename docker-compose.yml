@@ -153,6 +153,10 @@ services:
   ud-cart-ms:
     image: cart-ms
     container_name: ud-cart-ms
+  # Cloth microservice 
+  ud-cloth-ms:
+    image: cloth-ms
+    container_name: ud-cloth-ms
     depends_on:
       - ud-rabbitmq
       - ud-mongodb
