@@ -18,4 +18,13 @@ export class ClothService {
       throw error;
     }
   }
+
+  public async findById(id: string) {
+    try {
+      const cloth = await this.clothRepository.findOne({ where: { id } });
+      return cloth;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
