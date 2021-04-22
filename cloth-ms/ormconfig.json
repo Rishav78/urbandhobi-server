@@ -1,0 +1,12 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 54321,
+  "username": "app_user",
+  "password": "app_password",
+  "database": "ud_user",
+  "entities": ["src/**/**.entity{.ts,.js}"],
+  "seeds": ["src/api/v1/db/seeds/**/*.seed{.ts,.js}"],
+  "synchronize": true,
+  "logging": true
+}

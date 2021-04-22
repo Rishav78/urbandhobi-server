@@ -1,0 +1,13 @@
+{
+  "type": "postgres",
+  "host": "ud-postgres",
+  "port": 5432,
+  "username": "app_user",
+  "password": "app_password",
+  "database": "ud_cloth",
+  "entities": ["src/**/**.entity{.ts,.js}"],
+  "seeds": ["src/api/v1/db/seeds/**/*.seed{.ts,.js}"],
+  "factories": ["src/api/v1/db/factories/**/*.factorie{.ts,.js}"],
+  "synchronize": true,
+  "logging": true
+}
