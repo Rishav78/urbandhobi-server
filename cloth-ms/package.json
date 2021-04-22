@@ -19,11 +19,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js --configName ./ormconfig.json seed"
+    "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js --configName ./src/ormconfig.ts seed"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
     "@nestjs/core": "^7.6.15",
+    "@nestjs/microservices": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/typeorm": "^7.1.5",
     "amqp-connection-manager": "^3.2.2",
