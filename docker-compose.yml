@@ -121,6 +121,10 @@ services:
   ud-cart-ms:
     image: cart-ms
     container_name: ud-cart-ms
+  # Cloth microservice 
+  ud-cloth-ms:
+    image: cloth-ms
+    container_name: ud-cloth-ms
     depends_on:
       - ud-rabbitmq
       - ud-mongodb
@@ -148,4 +152,27 @@ services:
       - /app/node_modules
     ports: 
       - "3002:3000"
+      context: ./cloth-ms
+      target: debug
+    volumes:
+      - ./cloth-ms:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # Cloth API
+  ud-cloth:
+    image: ud-cloth
+    container_name: ud-cloth
+    depends_on:
+      - ud-rabbitmq
+      - ud-cloth-ms
+      - ud-mongodb
+    build:
+      context: ./cloth
+      target: debug
+    volumes:
+      - ./cloth:/app
+      - /app/node_modules
+    ports: 
+      - "3003:3000"
     restart: on-failure
