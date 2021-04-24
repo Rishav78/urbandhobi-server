@@ -1,7 +1,8 @@
 import { Controller, ValidationPipe } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Iterator } from 'src/lib/utils/iterator.util';
-import { AddItemDTO } from '../dto';
+import { AddItemsEvent, AddItemEvent } from '../dto';
+import { Item as ItemT } from '../typings';
 import { ItemService } from '../services';
 
 @Controller()
@@ -12,48 +13,48 @@ export class ItemController {
   ) {}
 
   @EventPattern('UD.Cart.Item.Add')
-  public async add(
-    @Payload(ValidationPipe) data: AddItemDTO | AddItemDTO[],
+  public async addItem(
+    @Payload(ValidationPipe)
+    { data, userId }: AddItemEvent,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
-      let items: AddItemDTO | AddItemDTO[];
-      if (Array.isArray(data)) {
-        const obj: { [key: string]: AddItemDTO } = {};
-        await this.iterator.forEach(data, async (item) => {
-          const {
+      return await this.itemService.add({ ...data, userId });
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Cart.Items.Add')
+  public async addItems(
+    @Payload(ValidationPipe)
+    { data, userId }: AddItemsEvent,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      console.log(data);
+      const obj: { [key: string]: ItemT.AddService } = {};
+      await this.iterator.forEach(data, async (item) => {
+        const { cartId, serviceId, itemId, serviceTypeId, count } = item;
+        // check for duplicate item entry in array
+        if (obj[itemId]) obj[itemId].count += count || 1;
+        else
+          obj[itemId] = {
             cartId,
             serviceId,
             itemId,
             serviceTypeId,
             userId,
-            count,
-          } = item;
-          if (obj[itemId]) obj[itemId].count += count;
-          else
-            obj[itemId] = {
-              cartId,
-              serviceId,
-              itemId,
-              serviceTypeId,
-              userId,
-              count,
-            };
-        });
-        items = Object.values(obj);
-      } else {
-        const {
-          cartId,
-          serviceId,
-          itemId,
-          serviceTypeId,
-          userId,
-          count,
-        } = data;
-        items = { cartId, serviceId, itemId, serviceTypeId, userId, count };
-      }
+            count: count || 1,
+          };
+      });
+      const items = Object.values(obj);
       return await this.itemService.add(items);
     } catch (error) {
       throw error;
