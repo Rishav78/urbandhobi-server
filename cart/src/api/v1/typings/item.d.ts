@@ -18,3 +18,7 @@ export interface Item {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface DeleteItem {
+  id: string;
+}

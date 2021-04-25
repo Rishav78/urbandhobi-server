@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtAuthMiddleware } from 'src/lib/middlewares';
 import { CartController } from '../controllers';
@@ -36,6 +41,9 @@ import { CartController } from '../controllers';
 })
 export class CartModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtAuthMiddleware).forRoutes('*');
+    consumer.apply(JwtAuthMiddleware).forRoutes({
+      path: '/api/cart/v1/user',
+      method: RequestMethod.GET,
+    });
   }
 }

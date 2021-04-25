@@ -1,14 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { Item } from '../db/entitys';
 import { Item as ItemT } from '../typings';
+import { Iterator } from 'src/lib/utils/iterator.util';
+import { RpcException } from '@nestjs/microservices';
+import { HttpException } from 'src/lib/helpers';
+import { CartService } from './cart.service';
 
 @Injectable()
 export class ItemService {
+  private readonly logger: Logger = new Logger('ITEM SERVICE');
   constructor(
     @InjectRepository(Item) private readonly itemRepository: Repository<Item>,
+    private readonly cartService: CartService,
+    private readonly iterator: Iterator,
+    private readonly connection: Connection,
   ) {}
 
   /**
@@ -36,10 +44,47 @@ export class ItemService {
    * @description add multiple items
    */
   public async addItems(obj: ItemT.AddService[]) {
+    const queryRunner = this.connection.createQueryRunner();
     try {
-      await this.itemRepository.insert(obj);
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      await this.iterator.forEach(
+        obj,
+        async ({ cartId, userId, serviceTypeId, itemId, serviceId, count }) => {
+          count = typeof count === 'number' ? count : 1;
+          if (count < 0) {
+            throw new RpcException(
+              new HttpException('count can not be negative', 400),
+            );
+          }
+          const item = await this.itemRepository.findOne({
+            where: { cartId, itemId },
+          });
+          if (item) {
+            return await queryRunner.manager
+              .createQueryBuilder(Item, 'item')
+              .update(Item)
+              .set({ count })
+              .execute();
+          }
+          return await queryRunner.manager
+            .createQueryBuilder(Item, 'item')
+            .insert()
+            .into(Item)
+            .values({
+              cartId,
+              itemId,
+              userId,
+              serviceId,
+              serviceTypeId,
+              count,
+            });
+        },
+      );
+      await queryRunner.commitTransaction();
       return true;
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       throw error;
     }
   }
@@ -56,6 +101,34 @@ export class ItemService {
       return await (Array.isArray(obj)
         ? this.addItems(obj)
         : this.addItem(obj));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findAll(cartId: string) {
+    try {
+      const items = await this.itemRepository.find({ where: { cartId } });
+      return items;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findByUserId(userId: string) {
+    try {
+      const cart = await this.cartService.findByUserId(userId);
+      const items = await this.findAll(cart.id);
+      return items;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async delete(id: string, cartId: string) {
+    try {
+      await this.itemRepository.softDelete({ id });
+      return true;
     } catch (error) {
       throw error;
     }

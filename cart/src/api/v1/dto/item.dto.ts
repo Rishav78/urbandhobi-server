@@ -18,3 +18,8 @@ export class AddItemDTO {
   @Min(1)
   count?: number;
 }
+
+export class DeleteItemDTO {
+  @IsUUID('4', { message: 'provide a valid item id' })
+  id: string;
+}

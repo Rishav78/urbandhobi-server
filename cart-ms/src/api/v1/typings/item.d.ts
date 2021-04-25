@@ -6,3 +6,8 @@ export interface AddService {
   serviceTypeId: string;
   count?: number;
 }
+
+export interface EventPayload<T> {
+  userId: string;
+  data: T;
+}
