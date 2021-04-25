@@ -124,4 +124,13 @@ export class ItemService {
       throw error;
     }
   }
+
+  public async delete(id: string, cartId: string) {
+    try {
+      await this.itemRepository.softDelete({ id });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

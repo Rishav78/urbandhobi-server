@@ -55,5 +55,10 @@ export class ItemModule implements NestModule {
       path: '/api/cart/v1/item/all',
       method: RequestMethod.GET,
     });
+
+    consumer.apply(JwtAuthMiddleware).forRoutes({
+      path: '/api/cart/v1/item/:id',
+      method: RequestMethod.DELETE,
+    });
   }
 }

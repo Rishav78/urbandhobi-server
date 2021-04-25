@@ -27,6 +27,11 @@ export class AddItemDTO {
   count?: number;
 }
 
+export class DeleteItemDTO {
+  @IsUUID('4', { message: 'provide a item user id' })
+  id: string;
+}
+
 export class AddItemEvent {
   @IsUUID()
   userId: string;
@@ -37,11 +42,20 @@ export class AddItemEvent {
 }
 
 export class AddItemsEvent {
-  @IsUUID()
+  @IsUUID('4', { message: 'provide a valid user id' })
   userId: string;
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AddItemDTO)
   data: AddItemDTO[];
+}
+
+export class DeleteItemEvent {
+  @IsUUID('4', { message: 'provide a valid user id' })
+  userId: string;
+
+  @ValidateNested({ each: true })
+  @Type(() => DeleteItemDTO)
+  data: DeleteItemDTO;
 }

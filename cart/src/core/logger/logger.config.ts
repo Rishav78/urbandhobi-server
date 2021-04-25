@@ -17,7 +17,7 @@ export const loggerConfig: WinstonModuleOptions = {
       filename: 'ud-cart-api.log',
       format: winston.format.combine(
         winston.format.timestamp(),
-        utilities.format.nestLike(),
+        utilities.format.nestLike('URBANDHOBI API'),
       ),
     }),
   ],

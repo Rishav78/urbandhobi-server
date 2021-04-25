@@ -1,7 +1,7 @@
 import { Controller, ValidationPipe, Logger } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Iterator } from 'src/lib/utils/iterator.util';
-import { AddItemsEvent, AddItemEvent } from '../dto';
+import { AddItemsEvent, AddItemEvent, DeleteItemEvent } from '../dto';
 import { Item as ItemT } from '../typings';
 import { CartService, ItemService } from '../services';
 
@@ -82,6 +82,27 @@ export class ItemController {
     } finally {
       channel.ack(originalMsg);
       this.logger.log('getItems end');
+    }
+  }
+
+  @EventPattern('UD.Cart.Item.Delete')
+  public async deleteItem(
+    @Payload(ValidationPipe) { data, userId }: DeleteItemEvent,
+    @Ctx() context: RmqContext,
+  ) {
+    this.logger.log('deleteItem start');
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const cart = await this.cartService.findByUserId(userId);
+      await this.itemService.delete(data.id, cart.id);
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+      this.logger.log('deleteItem end');
     }
   }
 }

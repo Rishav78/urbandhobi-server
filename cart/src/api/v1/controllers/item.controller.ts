@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Logger,
+  Param,
   ParseArrayPipe,
   Patch,
   Put,
@@ -12,9 +13,9 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from 'src/typings';
-import { Item, EventPayload } from '../typings';
+import { Item, EventPayload, DeleteItem } from '../typings';
 import { UserContext } from '../decorators/user.decorator';
-import { AddItemDTO } from '../dto';
+import { AddItemDTO, DeleteItemDTO } from '../dto';
 
 @Controller('item')
 export class ItemController {
@@ -67,8 +68,27 @@ export class ItemController {
     }
   }
 
-  @Delete()
-  public async delete() {}
+  @Delete(':id')
+  public async deleteItem(
+    @Param(ValidationPipe) data: DeleteItemDTO,
+    @UserContext() { id: userId }: User,
+  ) {
+    this.logger.log('deleteItem end');
+    try {
+      await this.cartClient
+        .send<any, EventPayload<DeleteItem>>('UD.Cart.Item.Delete', {
+          userId,
+          data,
+        })
+        .toPromise<boolean>();
+      return true;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      this.logger.log('deleteItem end');
+    }
+  }
 
   @Patch()
   public async update() {}
