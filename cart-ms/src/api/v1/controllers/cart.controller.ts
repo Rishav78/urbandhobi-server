@@ -1,10 +1,11 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
+import { Controller, Logger, ValidationPipe } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { CreateCartDTO } from '../dto';
 import { CartService } from '../services/cart.service';
 
 @Controller()
 export class CartController {
+  private readonly logger = new Logger('CART CONTROLLER', true);
   constructor(private readonly cartService: CartService) {}
 
   @EventPattern('UD.Cart.Create')
@@ -12,6 +13,7 @@ export class CartController {
     @Payload(ValidationPipe) { id: userId, name }: CreateCartDTO,
     @Ctx() context: RmqContext,
   ) {
+    this.logger.log('hi');
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
