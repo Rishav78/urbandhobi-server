@@ -1,14 +1,16 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
+import { Controller, ValidationPipe, Logger } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Iterator } from 'src/lib/utils/iterator.util';
 import { AddItemsEvent, AddItemEvent } from '../dto';
 import { Item as ItemT } from '../typings';
-import { ItemService } from '../services';
+import { CartService, ItemService } from '../services';
 
 @Controller()
 export class ItemController {
+  private readonly logger: Logger = new Logger('ITEM CONTROLLER');
   constructor(
     private readonly itemService: ItemService,
+    private readonly cartService: CartService,
     private readonly iterator: Iterator,
   ) {}
 
@@ -60,6 +62,26 @@ export class ItemController {
       throw error;
     } finally {
       channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Cart.Items.Get')
+  public async getItems(
+    @Payload(ValidationPipe) userId: string,
+    @Ctx() context: RmqContext,
+  ) {
+    this.logger.log('getItems start');
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const items = await this.itemService.findByUserId(userId);
+      return items;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+      this.logger.log('getItems end');
     }
   }
 }

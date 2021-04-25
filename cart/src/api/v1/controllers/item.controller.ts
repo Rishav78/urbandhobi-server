@@ -28,6 +28,7 @@ export class ItemController {
     @Body(new ParseArrayPipe({ items: AddItemDTO })) data: AddItemDTO[],
     @UserContext() { id: userId }: User,
   ) {
+    this.logger.log('addItems start');
     try {
       const item = await this.cartClient
         .send<any, EventPayload<AddItemDTO[]>>('UD.Cart.Items.Add', {
@@ -39,6 +40,8 @@ export class ItemController {
     } catch (error) {
       this.logger.error(error);
       throw error;
+    } finally {
+      this.logger.log('addItems end');
     }
   }
 
@@ -47,6 +50,7 @@ export class ItemController {
     @Body(ValidationPipe) data: AddItemDTO,
     @UserContext() { id: userId }: User,
   ) {
+    this.logger.log('addItem start');
     try {
       const item = await this.cartClient
         .send<any, EventPayload<AddItemDTO>>('UD.Cart.Item.Add', {
@@ -58,6 +62,8 @@ export class ItemController {
     } catch (error) {
       this.logger.error(error);
       throw error;
+    } finally {
+      this.logger.log('addItem end');
     }
   }
 
@@ -67,6 +73,19 @@ export class ItemController {
   @Patch()
   public async update() {}
 
-  @Get()
-  public async get() {}
+  @Get('all')
+  public async getAll(@UserContext() { id: userId }: User) {
+    this.logger.log('getAll start');
+    try {
+      const item = await this.cartClient
+        .send<any, string>('UD.Cart.Items.Get', userId)
+        .toPromise<Item[]>();
+      return item;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    } finally {
+      this.logger.log('getAll end');
+    }
+  }
 }

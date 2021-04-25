@@ -8,17 +8,16 @@ export const loggerConfig: WinstonModuleOptions = {
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
-        winston.format.colorize(),
         winston.format.timestamp(),
         utilities.format.nestLike(),
       ),
     }),
     new winston.transports.File({
       dirname: path.join(ROOT_DIR, 'logs'),
-      filename: 'ud-cart-microservice.log',
+      filename: 'ud-cart-api.log',
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json(),
+        utilities.format.nestLike(),
       ),
     }),
   ],

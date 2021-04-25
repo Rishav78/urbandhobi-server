@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Connection, Repository } from 'typeorm';
@@ -7,11 +7,14 @@ import { Item as ItemT } from '../typings';
 import { Iterator } from 'src/lib/utils/iterator.util';
 import { RpcException } from '@nestjs/microservices';
 import { HttpException } from 'src/lib/helpers';
+import { CartService } from './cart.service';
 
 @Injectable()
 export class ItemService {
+  private readonly logger: Logger = new Logger('ITEM SERVICE');
   constructor(
     @InjectRepository(Item) private readonly itemRepository: Repository<Item>,
+    private readonly cartService: CartService,
     private readonly iterator: Iterator,
     private readonly connection: Connection,
   ) {}
@@ -98,6 +101,25 @@ export class ItemService {
       return await (Array.isArray(obj)
         ? this.addItems(obj)
         : this.addItem(obj));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findAll(cartId: string) {
+    try {
+      const items = await this.itemRepository.find({ where: { cartId } });
+      return items;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findByUserId(userId: string) {
+    try {
+      const cart = await this.cartService.findByUserId(userId);
+      const items = await this.findAll(cart.id);
+      return items;
     } catch (error) {
       throw error;
     }
