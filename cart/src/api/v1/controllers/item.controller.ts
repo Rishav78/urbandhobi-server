@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Inject,
+  Logger,
   ParseArrayPipe,
   Patch,
   Put,
@@ -11,12 +12,13 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from 'src/typings';
-import { AddItem, Item, EventPayload } from '../typings';
+import { Item, EventPayload } from '../typings';
 import { UserContext } from '../decorators/user.decorator';
 import { AddItemDTO } from '../dto';
 
 @Controller('item')
 export class ItemController {
+  private readonly logger: Logger = new Logger('ITEM CONTROLLER API');
   constructor(
     @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
   ) {}
@@ -35,6 +37,7 @@ export class ItemController {
         .toPromise<Item>();
       return item;
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
@@ -53,6 +56,7 @@ export class ItemController {
         .toPromise<Item>();
       return item;
     } catch (error) {
+      this.logger.error(error);
       throw error;
     }
   }
