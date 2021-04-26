@@ -1,11 +1,5 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { JwtAuthMiddleware } from 'src/lib/middlewares';
 import { ItemController } from '../controllers';
 
 @Module({
@@ -39,26 +33,4 @@ import { ItemController } from '../controllers';
   ],
   controllers: [ItemController],
 })
-export class ItemModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtAuthMiddleware).forRoutes({
-      path: '/api/cart/v1/item',
-      method: RequestMethod.PUT,
-    });
-
-    consumer.apply(JwtAuthMiddleware).forRoutes({
-      path: '/api/cart/v1/item/s',
-      method: RequestMethod.PUT,
-    });
-
-    consumer.apply(JwtAuthMiddleware).forRoutes({
-      path: '/api/cart/v1/item/all',
-      method: RequestMethod.GET,
-    });
-
-    consumer.apply(JwtAuthMiddleware).forRoutes({
-      path: '/api/cart/v1/item/:id',
-      method: RequestMethod.DELETE,
-    });
-  }
-}
+export class ItemModule {}

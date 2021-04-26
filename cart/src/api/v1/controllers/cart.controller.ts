@@ -1,5 +1,13 @@
-import { Controller, Get, Inject, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Logger,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { AuthGuard } from 'src/lib/guards/auth.guard';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators/user.decorator';
 import { Cart } from '../typings';
@@ -11,8 +19,10 @@ export class CartController {
     @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get('user')
-  public async findByUserId(@UserContext() { id }: User) {
+  public async findByUserId(@UserContext() { id }: User, @Req() req: any) {
+    console.log(req.a);
     try {
       const cart = await this.cartClient
         .send('UD.Cart.FindByUserId', id)
