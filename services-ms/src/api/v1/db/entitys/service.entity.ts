@@ -18,6 +18,9 @@ export class Service {
   @Column('text', { nullable: true })
   imageId: string;
 
+  @Column('text', { nullable: true })
+  data: string;
+
   @Column('boolean', { nullable: true })
   active: boolean;
 
