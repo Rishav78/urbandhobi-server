@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Service } from './service.entity';
 
 @Entity()
 export class ServiceType {
@@ -17,6 +19,9 @@ export class ServiceType {
 
   @Column('boolean', { nullable: true })
   active: boolean;
+
+  @OneToMany(() => Service, (service) => service.categoryId)
+  services: Service[];
 
   @CreateDateColumn()
   createdAt: Date;
