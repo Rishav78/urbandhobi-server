@@ -40,3 +40,8 @@ export class AddAddressDTO {
   @IsString()
   district: string;
 }
+
+export class FindByIdDTO {
+  @IsUUID('4', { message: 'invalid user id' })
+  userId: string;
+}

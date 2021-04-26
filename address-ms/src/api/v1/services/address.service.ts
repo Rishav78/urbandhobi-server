@@ -21,4 +21,22 @@ export class AddressService {
       throw error;
     }
   }
+
+  public async findById(id: string) {
+    try {
+      const address = await this.addressRepository.findOne({ where: { id } });
+      return address;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findByUserId(userId: string) {
+    try {
+      const address = await this.addressRepository.find({ where: { userId } });
+      return address;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
