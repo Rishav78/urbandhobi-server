@@ -9,6 +9,7 @@ import {
   ParseArrayPipe,
   Patch,
   Put,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -16,6 +17,7 @@ import { User } from 'src/typings';
 import { Item, EventPayload, DeleteItem } from '../typings';
 import { UserContext } from '../decorators/user.decorator';
 import { AddItemDTO, DeleteItemDTO } from '../dto';
+import { AuthGuard } from 'src/lib/guards';
 
 @Controller('item')
 export class ItemController {
@@ -24,6 +26,7 @@ export class ItemController {
     @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Put()
   public async addItems(
     @Body(new ParseArrayPipe({ items: AddItemDTO })) data: AddItemDTO[],
@@ -46,6 +49,7 @@ export class ItemController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Put('s')
   public async addItem(
     @Body(ValidationPipe) data: AddItemDTO,
@@ -68,6 +72,7 @@ export class ItemController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   public async deleteItem(
     @Param(ValidationPipe) data: DeleteItemDTO,
@@ -90,9 +95,11 @@ export class ItemController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Patch()
   public async update() {}
 
+  @UseGuards(AuthGuard)
   @Get('all')
   public async getAll(@UserContext() { id: userId }: User) {
     this.logger.log('getAll start');
