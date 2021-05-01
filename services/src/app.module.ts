@@ -1,10 +1,24 @@
 import { Module } from '@nestjs/common';
-import { V1Module } from './api/v1/modules';
+import { Routes, RouterModule } from 'nest-router';
+import { V1Module, ServicesModule } from './api/v1/modules';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+const routes: Routes = [
+  {
+    path: 'api/services',
+    module: V1Module,
+    childrens: [
+      {
+        path: 'v1',
+        childrens: [ServicesModule],
+      },
+    ],
+  },
+];
+
 @Module({
-  imports: [V1Module],
+  imports: [RouterModule.forRoutes(routes), V1Module],
   controllers: [AppController],
   providers: [AppService],
 })

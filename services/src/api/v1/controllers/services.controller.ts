@@ -9,7 +9,7 @@ export class ServicesController {
     @Inject('SERVICES_SERVICE') private readonly servicesClient: ClientProxy,
   ) {}
 
-  @Get('s')
+  @Get()
   public async getAll() {
     this.logger.log('getAll start');
     try {
