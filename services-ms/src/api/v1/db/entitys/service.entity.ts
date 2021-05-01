@@ -5,10 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { ServiceType } from './service-type.entity';
 
 @Entity()
-export class Service {
+export class Services {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -26,6 +29,10 @@ export class Service {
 
   @Column('uuid', { nullable: false })
   categoryId: string;
+
+  @ManyToOne(() => ServiceType, (type) => type.services)
+  @JoinColumn({ name: 'categoryId' })
+  serviceType: ServiceType;
 
   @CreateDateColumn()
   createdAt: Date;
