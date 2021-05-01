@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as path from 'path';
+import { CustomLogger } from './lib/utils';
 
 const config: TypeOrmModuleOptions & { seeds?: string[] } = {
   type: 'postgres',
@@ -14,6 +15,7 @@ const config: TypeOrmModuleOptions & { seeds?: string[] } = {
   seeds: [path.join(__dirname, 'api', 'v1', 'db', 'seeds/**/*.seed.{ts,js}')],
   synchronize: true,
   logging: true,
+  logger: new CustomLogger(),
 };
 
 export default config;
