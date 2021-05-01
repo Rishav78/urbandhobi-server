@@ -174,37 +174,6 @@ services:
       - "3003:3000"
     restart: on-failure
 
-  # Services microservice 
-  ud-services-ms:
-    image: services-ms
-    container_name: ud-services-ms
-    depends_on:
-      - ud-rabbitmq
-      - ud-mongodb
-    build:
-      context: ./services-ms
-      target: debug
-    volumes:
-      - ./services-ms:/app
-      - /app/node_modules
-    restart: on-failure
-
-  # Services API
-  ud-services:
-    image: ud-services
-    container_name: ud-services
-    depends_on:
-      - ud-rabbitmq
-    build:
-      context: ./services
-      target: debug
-    volumes:
-      - ./services:/app
-      - /app/node_modules
-    ports: 
-      - "3003:3000"
-    restart: on-failure
-
   # Address microservice 
   ud-address-ms:
     image: address-ms
@@ -233,4 +202,35 @@ services:
       - /app/node_modules
     ports: 
       - "3004:3000"
+    restart: on-failure
+
+  # Services microservice 
+  ud-services-ms:
+    image: services-ms
+    container_name: ud-services-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-mongodb
+    build:
+      context: ./services-ms
+      target: debug
+    volumes:
+      - ./services-ms:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # Services API
+  ud-services:
+    image: ud-services
+    container_name: ud-services
+    depends_on:
+      - ud-rabbitmq
+    build:
+      context: ./services
+      target: debug
+    volumes:
+      - ./services:/app
+      - /app/node_modules
+    ports: 
+      - "3005:3000"
     restart: on-failure
