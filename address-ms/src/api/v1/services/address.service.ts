@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Address as AddressT } from '../typings';
-import { Address } from '../db/entitys';
+import { Address } from '../db/entities';
 
 @Injectable()
 export class AddressService {
