@@ -6,23 +6,26 @@ import {
   HttpStatus,
   Inject,
   Put,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Address } from 'node:cluster';
+import { Address } from '../typings/address';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators';
 import { AddAddressDTO } from '../dto';
 import { FindAllMS } from '../typings/address';
+import { JWTAuthGuard } from 'src/lib/guards';
 
 @Controller()
-export class AppController {
+export class AddressController {
   constructor(
     @Inject('ADDRESS_SERVICE') private readonly addressClient: ClientProxy,
   ) {}
 
-  @Put()
+  @UseGuards(JWTAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @Put()
   public async addAddress(
     @UserContext() { id: userId }: User,
     @Body(ValidationPipe) body: AddAddressDTO,
@@ -40,6 +43,7 @@ export class AppController {
     }
   }
 
+  @UseGuards(JWTAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
   public async findAll(@UserContext() { id: userId }: User) {
