@@ -56,4 +56,15 @@ export class AddressController {
       throw error;
     }
   }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('default')
+  public async defaultAddress(@UserContext() { id: userId }: User) {
+    try {
+      return 'null';
+    } catch (error) {
+      throw error;
+    }
+  }
 }
