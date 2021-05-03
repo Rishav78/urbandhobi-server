@@ -19,7 +19,7 @@ export class Services {
   name: string;
 
   @Column('text', { nullable: true })
-  imageId: string;
+  image: string;
 
   @Column('text', { nullable: true })
   data: string;
