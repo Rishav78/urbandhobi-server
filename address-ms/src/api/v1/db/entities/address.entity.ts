@@ -9,7 +9,7 @@ import {
 
 @Entity()
 export class Address {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', { nullable: true })
@@ -33,13 +33,13 @@ export class Address {
   @Column('text', { nullable: false })
   state: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: true })
   stateCode: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, default: 'india' })
   country: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, default: 'in' })
   countryCode: string;
 
   @Column('text', { nullable: false })
