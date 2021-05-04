@@ -1,10 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Inject,
+  InternalServerErrorException,
+  Param,
+  Patch,
   Put,
   UseGuards,
   ValidationPipe,
@@ -13,8 +17,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Address } from '../typings/address';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators';
-import { AddAddressDTO } from '../dto';
-import { FindAllMS } from '../typings/address';
+import { AddAddressDTO, UpdateDefaultAddressDTO } from '../dto';
+import { FindAllMS, UpdateDefaultAddressMS } from '../typings/address';
 import { JWTAuthGuard } from 'src/lib/guards';
 
 @Controller()
@@ -62,7 +66,53 @@ export class AddressController {
   @Get('default')
   public async defaultAddress(@UserContext() { id: userId }: User) {
     try {
-      return 'null';
+      const address = await this.addressClient
+        .send<any, FindAllMS>('UD.Address.Default', { userId })
+        .toPromise<Address | null>();
+      return address;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch('default/:id')
+  public async markDefault(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: UpdateDefaultAddressDTO,
+  ) {
+    try {
+      const success = await this.addressClient
+        .send<any, UpdateDefaultAddressMS>('UD.Address.Default.Update', {
+          userId,
+          id,
+        })
+        .toPromise<boolean>();
+      if (!success) {
+        throw new InternalServerErrorException();
+      }
+      return success;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  public async delete(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: UpdateDefaultAddressDTO,
+  ) {
+    try {
+      const address = await this.addressClient
+        .send<any, UpdateDefaultAddressMS>('UD.Address.Delete', {
+          userId,
+          id,
+        })
+        .toPromise<Address>();
+      return address;
     } catch (error) {
       throw error;
     }

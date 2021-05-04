@@ -6,7 +6,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { AddAddressDTO, FindByIdDTO } from '../dto';
+import { AddAddressDTO, FindByIdDTO, UpdateDefaultAddressDTO } from '../dto';
 import { AddressService } from '../services';
 
 @Controller()
@@ -68,6 +68,57 @@ export class AddressController {
     try {
       const addresses = await this.addressService.findByUserId(userId);
       return addresses;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @MessagePattern('UD.Address.Default.Update')
+  public async updateDefaultAddress(
+    @Payload(ValidationPipe) { userId, id }: UpdateDefaultAddressDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const addresses = await this.addressService.markDefault(id, userId);
+      return addresses;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @MessagePattern('UD.Address.Default')
+  public async getDefault(
+    @Payload(ValidationPipe) { userId }: FindByIdDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const addresses = await this.addressService.getDefault(userId);
+      return addresses;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @MessagePattern('UD.Address.Delete')
+  public async delete(
+    @Payload(ValidationPipe) { userId, id }: UpdateDefaultAddressDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const address = await this.addressService.delete(id, userId);
+      return address;
     } catch (error) {
       throw error;
     } finally {
