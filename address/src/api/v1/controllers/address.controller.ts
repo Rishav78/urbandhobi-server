@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -92,6 +93,26 @@ export class AddressController {
         throw new InternalServerErrorException();
       }
       return success;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  public async delete(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: UpdateDefaultAddressDTO,
+  ) {
+    try {
+      const address = await this.addressClient
+        .send<any, UpdateDefaultAddressMS>('UD.Address.Delete', {
+          userId,
+          id,
+        })
+        .toPromise<Address>();
+      return address;
     } catch (error) {
       throw error;
     }

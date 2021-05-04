@@ -108,4 +108,21 @@ export class AddressController {
       channel.ack(originalMsg);
     }
   }
+
+  @MessagePattern('UD.Address.Delete')
+  public async delete(
+    @Payload(ValidationPipe) { userId, id }: UpdateDefaultAddressDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const address = await this.addressService.delete(id, userId);
+      return address;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
 }

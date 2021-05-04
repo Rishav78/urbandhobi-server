@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -82,6 +87,27 @@ export class AddressService {
       throw error;
     } finally {
       this.logger.log('getDefault end');
+    }
+  }
+
+  public async delete(id: string, userId: string) {
+    this.logger.log('delete start');
+    try {
+      const address = await this.addressRepository.findOne({
+        where: { id, userId },
+      });
+      if (!address) {
+        throw new NotFoundException('invalid address id');
+      }
+      if (address.default) {
+        throw new BadRequestException('can not delete default address');
+      }
+      await this.addressRepository.softDelete({ userId, id });
+      return address;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.logger.log('delete end');
     }
   }
 }
