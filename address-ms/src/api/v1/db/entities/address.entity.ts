@@ -48,6 +48,9 @@ export class Address {
   @Column('text', { nullable: true })
   district: string;
 
+  @Column('boolean', { nullable: true, default: false })
+  default: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

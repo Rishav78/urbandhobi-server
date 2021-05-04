@@ -44,3 +44,8 @@ export class FindByIdDTO {
   @IsUUID('4', { message: 'invalid user id' })
   id: string;
 }
+
+export class UpdateDefaultAddressDTO {
+  @IsUUID('4', { message: 'invalid address id' })
+  id: string;
+}
