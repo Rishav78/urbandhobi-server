@@ -113,36 +113,6 @@ services:
       - "3001:3000"
     restart: on-failure
 
-  # Address microservice 
-  ud-address-ms:
-    image: address-ms
-    container_name: ud-address-ms
-    depends_on:
-      - ud-rabbitmq
-      - ud-postgres
-    build:
-      context: ./address-ms
-      target: debug
-    volumes:
-      - ./address-ms:/app
-      - /app/node_modules
-
-  # Address API 
-  ud-address:
-    image: ud-address
-    container_name: ud-address
-    depends_on:
-      - ud-rabbitmq
-    build:
-      context: ./address
-      target: debug
-    volumes:
-      - ./address:/app
-      - /app/node_modules
-    ports: 
-      - "3001:3000"
-    restart: on-failure
-
   # Cart microservice 
   ud-cart-ms:
     image: cart-ms
@@ -204,6 +174,36 @@ services:
       - "3003:3000"
     restart: on-failure
 
+  # Address microservice 
+  ud-address-ms:
+    image: address-ms
+    container_name: ud-address-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-postgres
+    build:
+      context: ./address-ms
+      target: debug
+    volumes:
+      - ./address-ms:/app
+      - /app/node_modules
+
+  # Address API 
+  ud-address:
+    image: ud-address
+    container_name: ud-address
+    depends_on:
+      - ud-rabbitmq
+    build:
+      context: ./address
+      target: debug
+    volumes:
+      - ./address:/app
+      - /app/node_modules
+    ports: 
+      - "3004:3000"
+    restart: on-failure
+
   # Services microservice 
   ud-services-ms:
     image: services-ms
@@ -232,5 +232,5 @@ services:
       - ./services:/app
       - /app/node_modules
     ports: 
-      - "3003:3000"
+      - "3005:3000"
     restart: on-failure

@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { JwtAuthMiddleware } from 'src/lib/middlewares';
+import { AddressController } from '../controllers';
 
 @Module({
   imports: [
@@ -17,10 +17,20 @@ import { JwtAuthMiddleware } from 'src/lib/middlewares';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'AUTHENTICATION_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URL],
+          queue: 'ud_gate_keeper_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
   ],
+  controllers: [AddressController],
 })
-export class AddressModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtAuthMiddleware);
-  }
-}
+export class AddressModule {}

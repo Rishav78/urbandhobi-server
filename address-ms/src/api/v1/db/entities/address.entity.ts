@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+@Entity()
 export class Address {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', { nullable: true })
@@ -31,13 +33,13 @@ export class Address {
   @Column('text', { nullable: false })
   state: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: true })
   stateCode: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, default: 'india' })
   country: string;
 
-  @Column('text', { nullable: false })
+  @Column('text', { nullable: false, default: 'in' })
   countryCode: string;
 
   @Column('text', { nullable: false })
@@ -45,6 +47,9 @@ export class Address {
 
   @Column('text', { nullable: true })
   district: string;
+
+  @Column('boolean', { nullable: true, default: false })
+  default: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
