@@ -40,7 +40,6 @@ export class ItemController {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
-      console.log(data);
       const obj: { [key: string]: ItemT.AddService } = {};
       await this.iterator.forEach(data, async (item) => {
         const { cartId, serviceId, itemId, serviceTypeId, count } = item;
