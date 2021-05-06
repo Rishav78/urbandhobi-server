@@ -23,7 +23,7 @@ export class ItemController {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
-      return await this.itemService.add({ ...data, userId });
+      return await this.itemService.add({ ...data }, userId);
     } catch (error) {
       throw error;
     } finally {
@@ -40,24 +40,21 @@ export class ItemController {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
-      console.log(data);
       const obj: { [key: string]: ItemT.AddService } = {};
       await this.iterator.forEach(data, async (item) => {
-        const { cartId, serviceId, itemId, serviceTypeId, count } = item;
+        const { serviceId, itemId, serviceTypeId, count } = item;
         // check for duplicate item entry in array
         if (obj[itemId]) obj[itemId].count += count || 1;
         else
           obj[itemId] = {
-            cartId,
             serviceId,
             itemId,
             serviceTypeId,
-            userId,
             count: count || 1,
           };
       });
       const items = Object.values(obj);
-      return await this.itemService.add(items);
+      return await this.itemService.add(items, userId);
     } catch (error) {
       throw error;
     } finally {
