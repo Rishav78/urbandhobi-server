@@ -12,8 +12,8 @@ export class AddItemDTO {
   @IsUUID('4', { message: 'provide a valid item id' })
   itemId: string;
 
-  @IsUUID('4', { message: 'provide a valid cart id' })
-  cartId: string;
+  // @IsUUID('4', { message: 'provide a valid cart id' })
+  // cartId: string;
 
   @IsUUID('4', { message: 'provide a valid service id' })
   serviceId: string;

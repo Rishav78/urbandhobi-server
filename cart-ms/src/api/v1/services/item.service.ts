@@ -26,10 +26,11 @@ export class ItemService {
    *
    * @description add a single item
    */
-  public async addItem(obj: ItemT.AddService) {
+  public async addItem(obj: ItemT.AddService, userId: string) {
     const id = uuidv4();
     try {
-      await this.itemRepository.insert({ ...obj, id });
+      const cart = await this.cartService.findByUserId(userId);
+      await this.itemRepository.insert({ ...obj, userId, cartId: cart.id, id });
       return id;
     } catch (error) {
       throw error;
@@ -43,14 +44,15 @@ export class ItemService {
    *
    * @description add multiple items
    */
-  public async addItems(obj: ItemT.AddService[]) {
+  public async addItems(obj: ItemT.AddService[], userId: string) {
     const queryRunner = this.connection.createQueryRunner();
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
+      const cart = await this.cartService.findByUserId(userId);
       await this.iterator.forEach(
         obj,
-        async ({ cartId, userId, serviceTypeId, itemId, serviceId, count }) => {
+        async ({ serviceTypeId, itemId, serviceId, count }) => {
           count = typeof count === 'number' ? count : 1;
           if (count < 0) {
             throw new RpcException(
@@ -58,7 +60,7 @@ export class ItemService {
             );
           }
           const item = await this.itemRepository.findOne({
-            where: { cartId, itemId },
+            where: { cartId: cart.id, itemId },
           });
           if (item) {
             return await queryRunner.manager
@@ -72,13 +74,14 @@ export class ItemService {
             .insert()
             .into(Item)
             .values({
-              cartId,
               itemId,
               userId,
               serviceId,
               serviceTypeId,
               count,
-            });
+              cartId: cart.id,
+            })
+            .execute();
         },
       );
       await queryRunner.commitTransaction();
@@ -98,11 +101,11 @@ export class ItemService {
    *
    * @description For multiple item return boolean else return item id
    */
-  public async add(obj: ItemT.AddService | ItemT.AddService[]) {
+  public async add(obj: ItemT.AddService | ItemT.AddService[], userId: string) {
     try {
       return await (Array.isArray(obj)
-        ? this.addItems(obj)
-        : this.addItem(obj));
+        ? this.addItems(obj, userId)
+        : this.addItem(obj, userId));
     } catch (error) {
       throw error;
     }
