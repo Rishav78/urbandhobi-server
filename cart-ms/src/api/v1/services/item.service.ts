@@ -60,7 +60,7 @@ export class ItemService {
             );
           }
           const item = await this.itemRepository.findOne({
-            where: { cartId: cart.id, itemId },
+            where: { cartId: cart.id, itemId, serviceId },
           });
           if (item) {
             return await queryRunner.manager
