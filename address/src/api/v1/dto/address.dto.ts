@@ -1,8 +1,7 @@
-import { Optional } from '@nestjs/common';
-import { IsEmail, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class AddAddressDTO {
-  @Optional()
+  @IsOptional()
   @IsString()
   title: string;
 
@@ -21,24 +20,32 @@ export class AddAddressDTO {
   @IsString({ message: 'invalid state name' })
   state: string;
 
+  @IsOptional()
   @IsString({ message: 'invalid state code' })
   stateCode: string;
 
+  @IsOptional()
   @IsString({ message: 'invalid country name' })
   country: string;
 
+  @IsOptional()
   @IsString({ message: 'invalid country code' })
   countryCode: string;
 
   @IsString({ message: 'invalid locality' })
   locality: string;
 
-  @Optional()
+  @IsOptional()
   @IsString()
   district: string;
 }
 
 export class FindByIdDTO {
   @IsUUID('4', { message: 'invalid user id' })
+  id: string;
+}
+
+export class UpdateDefaultAddressDTO {
+  @IsUUID('4', { message: 'invalid address id' })
   id: string;
 }

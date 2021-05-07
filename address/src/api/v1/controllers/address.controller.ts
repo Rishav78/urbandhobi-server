@@ -1,28 +1,35 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Inject,
+  InternalServerErrorException,
+  Param,
+  Patch,
   Put,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { Address } from 'node:cluster';
+import { Address } from '../typings/address';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators';
-import { AddAddressDTO } from '../dto';
-import { FindAllMS } from '../typings/address';
+import { AddAddressDTO, UpdateDefaultAddressDTO } from '../dto';
+import { FindAllMS, UpdateDefaultAddressMS } from '../typings/address';
+import { JWTAuthGuard } from 'src/lib/guards';
 
 @Controller()
-export class AppController {
+export class AddressController {
   constructor(
     @Inject('ADDRESS_SERVICE') private readonly addressClient: ClientProxy,
   ) {}
 
-  @Put()
+  @UseGuards(JWTAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @Put()
   public async addAddress(
     @UserContext() { id: userId }: User,
     @Body(ValidationPipe) body: AddAddressDTO,
@@ -40,6 +47,7 @@ export class AppController {
     }
   }
 
+  @UseGuards(JWTAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
   public async findAll(@UserContext() { id: userId }: User) {
@@ -48,6 +56,63 @@ export class AppController {
         .send<any, FindAllMS>('UD.Address.FindByUserId', { userId })
         .toPromise<Address[]>();
       return addresses;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get('default')
+  public async defaultAddress(@UserContext() { id: userId }: User) {
+    try {
+      const address = await this.addressClient
+        .send<any, FindAllMS>('UD.Address.Default', { userId })
+        .toPromise<Address | null>();
+      return address;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch('default/:id')
+  public async markDefault(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: UpdateDefaultAddressDTO,
+  ) {
+    try {
+      const success = await this.addressClient
+        .send<any, UpdateDefaultAddressMS>('UD.Address.Default.Update', {
+          userId,
+          id,
+        })
+        .toPromise<boolean>();
+      if (!success) {
+        throw new InternalServerErrorException();
+      }
+      return success;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  public async delete(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: UpdateDefaultAddressDTO,
+  ) {
+    try {
+      const address = await this.addressClient
+        .send<any, UpdateDefaultAddressMS>('UD.Address.Delete', {
+          userId,
+          id,
+        })
+        .toPromise<Address>();
+      return address;
     } catch (error) {
       throw error;
     }

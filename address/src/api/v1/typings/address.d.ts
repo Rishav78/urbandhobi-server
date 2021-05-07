@@ -17,6 +17,11 @@ export interface FindAllMS {
   userId: string;
 }
 
+export interface UpdateDefaultAddressMS {
+  userId: string;
+  id: string;
+}
+
 export interface Address {
   id: string;
   title: string;

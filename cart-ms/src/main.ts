@@ -3,6 +3,8 @@ import './lib/env';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { NestFactory } from '@nestjs/core';
+import { loggerConfig } from './core/logger/logger.config';
+import { WinstonModule } from 'nest-winston';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -18,6 +20,7 @@ async function bootstrap() {
           durable: false,
         },
       },
+      logger: WinstonModule.createLogger(loggerConfig),
     },
   );
   await app.listen(() => {

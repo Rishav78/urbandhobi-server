@@ -1,6 +1,5 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { JwtAuthMiddleware } from 'src/lib/middlewares';
 import { CartController } from '../controllers';
 
 @Module({
@@ -34,8 +33,4 @@ import { CartController } from '../controllers';
   ],
   controllers: [CartController],
 })
-export class CartModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtAuthMiddleware).forRoutes('*');
-  }
-}
+export class CartModule {}
