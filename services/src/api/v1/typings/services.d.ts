@@ -18,3 +18,12 @@ export interface ServiceType {
   updatedAt: Date;
   deletedAt: Date;
 }
+
+export interface Timing {
+  id: number;
+  start: string;
+  end: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

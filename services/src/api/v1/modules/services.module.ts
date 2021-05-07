@@ -4,6 +4,7 @@ import {
   ServicesController,
   ServiceTypeController,
   ServiceAreaController,
+  TimingsController,
 } from '../controllers';
 
 @Module({
@@ -26,6 +27,7 @@ import {
     ServicesController,
     ServiceTypeController,
     ServiceAreaController,
+    TimingsController,
   ],
 })
 export class ServicesModule {}
