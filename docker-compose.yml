@@ -234,3 +234,34 @@ services:
     ports: 
       - "3005:3000"
     restart: on-failure
+
+  # Services microservice 
+  ud-laundry-ms:
+    image: laundry-ms
+    container_name: ud-laundry-ms
+    depends_on:
+      - ud-rabbitmq
+      - ud-mongodb
+    build:
+      context: ./laundry-ms
+      target: debug
+    volumes:
+      - ./laundry-ms:/app
+      - /app/node_modules
+    restart: on-failure
+
+  # laundry API
+  ud-laundry:
+    image: ud-laundry
+    container_name: ud-laundry
+    depends_on:
+      - ud-rabbitmq
+    build:
+      context: ./laundry
+      target: debug
+    volumes:
+      - ./laundry:/app
+      - /app/node_modules
+    ports: 
+      - "3006:3000"
+    restart: on-failure
