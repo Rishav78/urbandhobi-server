@@ -21,11 +21,24 @@ export class CartController {
 
   @UseGuards(AuthGuard)
   @Get('user')
-  public async findByUserId(@UserContext() { id }: User, @Req() req: any) {
-    console.log(req.a);
+  public async findByUserId(@UserContext() { id }: User) {
     try {
       const cart = await this.cartClient
         .send('UD.Cart.FindByUserId', id)
+        .toPromise<Cart>();
+      return cart;
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('submit')
+  public async submit(@UserContext() { id: userId }: User) {
+    try {
+      const cart = await this.cartClient
+        .send<any, string>('UD.Cart.Submit', userId)
         .toPromise<Cart>();
       return cart;
     } catch (error) {
