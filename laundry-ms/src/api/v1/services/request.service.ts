@@ -32,11 +32,11 @@ export class RequestService {
   ) {
     const id = uuidv4();
     try {
-      if (this.findByCartId(cartId)) {
+      if (await this.findByCartId(cartId)) {
         throw new BadRequestException('cart has already been submited');
       }
-      // mark cart submit if not already
-      this.cartClient.emit('UD.Cart.Submit', { userId, cartId });
+      // mark cart submited if not already
+      this.cartClient.emit('UD.Cart.Submit', userId);
       await this.requestRepository.insert({
         id,
         cartId,
