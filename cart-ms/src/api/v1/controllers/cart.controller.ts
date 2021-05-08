@@ -5,7 +5,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CreateCartDTO } from '../dto';
+import { CreateCartDTO, SubmitIfNotDTO } from '../dto';
 import { CartService } from '../services/cart.service';
 
 @Controller()
@@ -57,8 +57,24 @@ export class CartController {
     const originalMsg = context.getMessage();
     try {
       const id = await this.cartService.submit(userId);
-      const cart = await this.cartService.findById(id);
+      const cart = await this.cartService.findById(id, userId);
       return cart;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Cart.SubmitIfNot')
+  public async submitIfNot(
+    @Payload(ValidationPipe) { id, userId }: SubmitIfNotDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      return await this.cartService.submitIfNot(id, userId);
     } catch (error) {
       throw error;
     } finally {
