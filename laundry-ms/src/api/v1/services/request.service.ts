@@ -36,7 +36,7 @@ export class RequestService {
         throw new BadRequestException('cart has already been submited');
       }
       // mark cart submited if not already
-      this.cartClient.emit('UD.Cart.Submit', userId);
+      this.cartClient.emit('UD.Cart.SubmitIfNot', { userId, id: cartId });
       await this.requestRepository.insert({
         id,
         cartId,
