@@ -45,10 +45,10 @@ export class CartService {
     }
   }
 
-  public async findById(id: string) {
+  public async findById(id: string, userId: string) {
     try {
       const cart = await this.cartRepository.findOne({
-        where: { id, status: 'pending' },
+        where: { id, userId },
       });
       return cart;
     } catch (error) {
@@ -82,6 +82,22 @@ export class CartService {
       throw error;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  public async submitIfNot(id: string, userId: string) {
+    try {
+      const cart = await this.findById(id, userId);
+      if (!cart) {
+        throw new NotFoundException('cart does not exist');
+      }
+      if (cart.status === 'submited') {
+        return false;
+      }
+      await this.submit(userId);
+      return true;
+    } catch (error) {
+      throw error;
     }
   }
 }
