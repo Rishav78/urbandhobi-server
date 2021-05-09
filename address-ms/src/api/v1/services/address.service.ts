@@ -110,4 +110,16 @@ export class AddressService {
       this.logger.log('delete end');
     }
   }
+
+  public async getDefaultOrById(id: string, userId: string) {
+    try {
+      if (id) {
+        return await this.findById(id);
+      } else {
+        return await this.getDefault(userId);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }
