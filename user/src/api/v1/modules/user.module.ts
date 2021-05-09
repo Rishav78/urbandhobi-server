@@ -1,6 +1,6 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { JwtAuthMiddleware } from 'src/lib/middlewares';
+import { UserController } from '../controllers';
 
 @Module({
   imports: [
@@ -18,11 +18,7 @@ import { JwtAuthMiddleware } from 'src/lib/middlewares';
       },
     ]),
   ],
-  controllers: [],
+  controllers: [UserController],
   providers: [],
 })
-export class UserModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtAuthMiddleware);
-  }
-}
+export class UserModule {}
