@@ -55,3 +55,12 @@ export class UpdateDefaultAddressDTO {
   @IsUUID('4', { message: 'invalid address id' })
   id: string;
 }
+
+export class GetDefaultOrByIdDTO {
+  @IsOptional()
+  @IsUUID('4', { message: 'invalid user id' })
+  id: string;
+
+  @IsUUID('4', { message: 'invalid user id' })
+  userId: string;
+}
