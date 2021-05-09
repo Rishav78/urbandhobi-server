@@ -5,6 +5,8 @@ export interface RaiseEvent {
   cartId: string;
   timingId: number;
   paymentMethod: 'cod';
+  addressId: string;
+  pickupDate: Date;
 }
 
 export interface Cart {

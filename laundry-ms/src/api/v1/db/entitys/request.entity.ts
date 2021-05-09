@@ -24,6 +24,9 @@ export class Request {
   @Column('uuid', { nullable: false })
   addressId: string;
 
+  @Column('date', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  pickupDate: Date;
+
   @Column('enum', { enum: ['cod'], default: 'cod', nullable: false })
   paymentMethod: string;
 

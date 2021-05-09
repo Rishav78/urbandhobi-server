@@ -14,6 +14,8 @@ interface AddArgs {
   cartId: string;
   timingId: number;
   paymentMethod: 'cod';
+  addressId: string;
+  pickupDate: Date;
 }
 
 @Injectable()
@@ -27,7 +29,7 @@ export class RequestService {
   ) {}
 
   public async add(
-    { cartId, timingId, paymentMethod }: AddArgs,
+    { cartId, timingId, paymentMethod, addressId, pickupDate }: AddArgs,
     userId: string,
   ) {
     const id = uuidv4();
@@ -43,6 +45,8 @@ export class RequestService {
         timingId,
         paymentMethod,
         userId,
+        addressId,
+        pickupDate,
       });
       return id;
     } catch (error) {

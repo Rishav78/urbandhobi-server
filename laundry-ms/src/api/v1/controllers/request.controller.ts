@@ -1,23 +1,53 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import {
+  BadRequestException,
+  Controller,
+  Inject,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  ClientProxy,
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { RaiseDTO, RequestsDTO } from '../dto';
+import { Address } from '../typings';
 import { RequestService } from '../services';
 
 @Controller()
 export class RequestController {
-  constructor(private readonly requestService: RequestService) {}
+  constructor(
+    private readonly requestService: RequestService,
+    @Inject('ADDRESS_SERVICE') private readonly addressClient: ClientProxy,
+  ) {}
 
   @EventPattern('UD.Laundry.Request.Raise')
   public async raise(
     @Payload(ValidationPipe)
-    { userId, cartId, paymentMethod, timingId }: RaiseDTO,
+    {
+      userId,
+      cartId,
+      paymentMethod,
+      timingId,
+      addressId,
+      pickupDate,
+    }: RaiseDTO,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
     try {
+      const address = await this.addressClient
+        .send('UD.Address.GetDefaultOrById', { id: addressId, userId })
+        .toPromise<Address | null>();
+      if (!address) {
+        throw new BadRequestException(
+          'default/provided address does not exist',
+        );
+      }
       const res = await this.requestService.add(
-        { cartId, paymentMethod, timingId },
+        { cartId, paymentMethod, timingId, addressId: address.id, pickupDate },
         userId,
       );
       return res;

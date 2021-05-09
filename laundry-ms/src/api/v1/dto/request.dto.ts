@@ -1,4 +1,10 @@
-import { IsEnum, IsNumber, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+  IsDateString,
+} from 'class-validator';
 
 export class RaiseDTO {
   @IsUUID('4', { message: 'invalid user id' })
@@ -7,8 +13,12 @@ export class RaiseDTO {
   @IsUUID('4', { message: 'invalid cart id' })
   cartId: string;
 
+  @IsOptional()
   @IsUUID('4', { message: 'invalid address id' })
   addressId: string;
+
+  @IsDateString()
+  pickupDate: Date;
 
   @IsNumber()
   timingId: number;

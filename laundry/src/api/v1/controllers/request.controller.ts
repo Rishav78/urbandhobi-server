@@ -43,7 +43,8 @@ export class RequestController {
   @Put('raise')
   public async raise(
     @UserContext() { id: userId }: User,
-    @Body(ValidationPipe) { timingId, paymentMethod, addressId }: RaiseDTO,
+    @Body(ValidationPipe)
+    { timingId, paymentMethod, addressId, pickupDate }: RaiseDTO,
   ) {
     try {
       const cart = await this.cartClient
@@ -59,6 +60,8 @@ export class RequestController {
           userId,
           paymentMethod,
           timingId,
+          addressId,
+          pickupDate,
         })
         .toPromise<string>();
       return res;

@@ -1,4 +1,10 @@
-import { IsEnum, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsUUID,
+  IsDateString,
+} from 'class-validator';
 
 export class RaiseDTO {
   @IsNumber({}, { message: 'invalid timing id' })
@@ -6,6 +12,9 @@ export class RaiseDTO {
 
   @IsEnum(['cod'])
   paymentMethod: 'cod';
+
+  @IsDateString()
+  pickupDate: Date;
 
   @IsOptional()
   @IsUUID('4', { message: 'invalid address id' })
