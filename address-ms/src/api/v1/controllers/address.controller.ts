@@ -6,7 +6,12 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { AddAddressDTO, FindByIdDTO, UpdateDefaultAddressDTO } from '../dto';
+import {
+  AddAddressDTO,
+  FindByIdDTO,
+  GetDefaultOrByIdDTO,
+  UpdateDefaultAddressDTO,
+} from '../dto';
 import { AddressService } from '../services';
 
 @Controller()
@@ -118,6 +123,23 @@ export class AddressController {
     const originalMsg = context.getMessage();
     try {
       const address = await this.addressService.delete(id, userId);
+      return address;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @MessagePattern('UD.Address.GetDefaultOrById')
+  public async getDefaultOrById(
+    @Payload(ValidationPipe) { id, userId }: GetDefaultOrByIdDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const address = await this.addressService.getDefaultOrById(id, userId);
       return address;
     } catch (error) {
       throw error;
