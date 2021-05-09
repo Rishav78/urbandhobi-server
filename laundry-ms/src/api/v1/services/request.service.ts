@@ -61,4 +61,13 @@ export class RequestService {
       throw error;
     }
   }
+
+  public async findRequests(userId: string) {
+    try {
+      const requests = await this.requestRepository.find({ where: { userId } });
+      return requests;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

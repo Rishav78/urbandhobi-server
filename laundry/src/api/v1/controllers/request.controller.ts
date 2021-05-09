@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Logger,
   NotFoundException,
@@ -13,7 +14,7 @@ import { JWTAuthGuard } from 'src/lib/guards';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators/user.decorator';
 import { RaiseDTO } from '../dto';
-import { RaiseEvent, Cart } from '../typings';
+import { RaiseEvent, Cart, Request } from '../typings';
 
 @Controller()
 export class RequestController {
@@ -24,10 +25,25 @@ export class RequestController {
   ) {}
 
   @UseGuards(JWTAuthGuard)
+  @Get()
+  public async getRequests(@UserContext() { id: userId }: User) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string }>('UD.Laundry.Requests', {
+          userId,
+        })
+        .toPromise<Request[]>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
   @Put('raise')
   public async raise(
     @UserContext() { id: userId }: User,
-    @Body(ValidationPipe) { timingId, paymentMethod }: RaiseDTO,
+    @Body(ValidationPipe) { timingId, paymentMethod, addressId }: RaiseDTO,
   ) {
     try {
       const cart = await this.cartClient

@@ -1,3 +1,5 @@
+export * from './address';
+
 export interface RaiseEvent {
   userId: string;
   cartId: string;
@@ -10,6 +12,15 @@ export interface Cart {
   name: string;
   userId: string;
   status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}
+
+export interface Request {
+  id: string;
+  userId: string;
+  cartId: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

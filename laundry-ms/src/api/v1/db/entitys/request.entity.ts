@@ -21,6 +21,9 @@ export class Request {
   @Column('int', { nullable: false })
   timingId: number;
 
+  @Column('uuid', { nullable: false })
+  addressId: string;
+
   @Column('enum', { enum: ['cod'], default: 'cod', nullable: false })
   paymentMethod: string;
 
