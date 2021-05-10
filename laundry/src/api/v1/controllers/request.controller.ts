@@ -1,9 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   Inject,
   Logger,
   NotFoundException,
+  Param,
+  Patch,
   Put,
   UseGuards,
   ValidationPipe,
@@ -12,8 +16,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JWTAuthGuard } from 'src/lib/guards';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators/user.decorator';
-import { RaiseDTO } from '../dto';
-import { RaiseEvent, Cart } from '../typings';
+import { RaiseDTO, RovokeDTO, ScheduleDTO } from '../dto';
+import { RaiseEvent, Cart, Request, ScheduleEvent } from '../typings';
 
 @Controller()
 export class RequestController {
@@ -24,10 +28,26 @@ export class RequestController {
   ) {}
 
   @UseGuards(JWTAuthGuard)
+  @Get()
+  public async getRequests(@UserContext() { id: userId }: User) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string }>('UD.Laundry.Requests', {
+          userId,
+        })
+        .toPromise<Request[]>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
   @Put('raise')
   public async raise(
     @UserContext() { id: userId }: User,
-    @Body(ValidationPipe) { timingId, paymentMethod }: RaiseDTO,
+    @Body(ValidationPipe)
+    { paymentMethod }: RaiseDTO,
   ) {
     try {
       const cart = await this.cartClient
@@ -42,9 +62,76 @@ export class RequestController {
           cartId,
           userId,
           paymentMethod,
+        })
+        .toPromise<Request>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('schedule/:id')
+  public async schedule(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: RovokeDTO,
+    @Body(ValidationPipe)
+    { timingId, addressId, pickupDate }: ScheduleDTO,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, ScheduleEvent>('UD.Laundry.Request.Schedule', {
+          id,
+          pickupDate,
+          addressId,
           timingId,
+          userId,
         })
         .toPromise<string>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('revoke/:id')
+  public async revoke(
+    @Param() { id }: RovokeDTO,
+    @UserContext() { id: userId }: User,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string; id: string }>(
+          'UD.Laundry.Request.Revoke',
+          {
+            userId,
+            id,
+          },
+        )
+        .toPromise<Request[]>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Delete(':id')
+  public async delete(
+    @Param() { id }: RovokeDTO,
+    @UserContext() { id: userId }: User,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string; id: string }>(
+          'UD.Laundry.Request.Delete',
+          {
+            userId,
+            id,
+          },
+        )
+        .toPromise<Request[]>();
       return res;
     } catch (error) {
       throw error;

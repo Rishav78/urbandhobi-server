@@ -20,6 +20,19 @@ import { RequestService } from '../services';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'ADDRESS_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URL],
+          queue: 'ud_address_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
     TypeOrmModule.forFeature([Request]),
   ],
   controllers: [RequestController],

@@ -18,11 +18,20 @@ export class Request {
   @Column('text', { nullable: false })
   cartId: string;
 
-  @Column('int', { nullable: false })
+  @Column('int', { nullable: true })
   timingId: number;
+
+  @Column('uuid', { nullable: true })
+  addressId: string;
+
+  @Column('date', { nullable: true })
+  pickupDate: Date;
 
   @Column('enum', { enum: ['cod'], default: 'cod', nullable: false })
   paymentMethod: string;
+
+  @Column('boolean', { nullable: false, default: true })
+  revoked: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
