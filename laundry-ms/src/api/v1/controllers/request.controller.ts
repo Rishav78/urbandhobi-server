@@ -11,7 +11,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { RaiseDTO, RequestsDTO, RevokeDTO } from '../dto';
+import { RaiseDTO, RequestsDTO, RevokeDTO, ScheduleDTO } from '../dto';
 import { Address } from '../typings';
 import { RequestService } from '../services';
 
@@ -25,14 +25,29 @@ export class RequestController {
   @EventPattern('UD.Laundry.Request.Raise')
   public async raise(
     @Payload(ValidationPipe)
-    {
-      userId,
-      cartId,
-      paymentMethod,
-      timingId,
-      addressId,
-      pickupDate,
-    }: RaiseDTO,
+    { userId, cartId, paymentMethod }: RaiseDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      const id = await this.requestService.add(
+        { cartId, paymentMethod },
+        userId,
+      );
+      const request = await this.requestService.findById(id);
+      return request;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Laundry.Request.Schedule')
+  public async schedule(
+    @Payload(ValidationPipe)
+    { userId, addressId, timingId, pickupDate, id }: ScheduleDTO,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
@@ -46,8 +61,8 @@ export class RequestController {
           'default/provided address does not exist',
         );
       }
-      const res = await this.requestService.add(
-        { cartId, paymentMethod, timingId, addressId: address.id, pickupDate },
+      const res = await this.requestService.schedule(
+        { addressId, id, pickupDate, timingId },
         userId,
       );
       return res;

@@ -7,11 +7,18 @@ import {
 } from 'class-validator';
 
 export class RaiseDTO {
-  @IsNumber({}, { message: 'invalid timing id' })
-  timingId: number;
-
   @IsEnum(['cod'])
   paymentMethod: 'cod';
+}
+
+export class RovokeDTO {
+  @IsUUID('4', { message: 'invalid request id' })
+  id: string;
+}
+
+export class ScheduleDTO {
+  @IsNumber({}, { message: 'invalid timing id' })
+  timingId: number;
 
   @IsDateString()
   pickupDate: Date;
@@ -19,9 +26,4 @@ export class RaiseDTO {
   @IsOptional()
   @IsUUID('4', { message: 'invalid address id' })
   addressId: string;
-}
-
-export class RovokeDTO {
-  @IsUUID('4', { message: 'invalid request id' })
-  id: string;
 }

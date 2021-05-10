@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,8 +13,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface AddArgs {
   cartId: string;
-  timingId: number;
   paymentMethod: 'cod';
+}
+
+interface ScheduleArgs {
+  id: string;
+  timingId: number;
   addressId: string;
   pickupDate: Date;
 }
@@ -28,10 +33,7 @@ export class RequestService {
     @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
   ) {}
 
-  public async add(
-    { cartId, timingId, paymentMethod, addressId, pickupDate }: AddArgs,
-    userId: string,
-  ) {
+  public async add({ cartId, paymentMethod }: AddArgs, userId: string) {
     const id = uuidv4();
     try {
       if (await this.findByCartId(cartId)) {
@@ -42,11 +44,8 @@ export class RequestService {
       await this.requestRepository.insert({
         id,
         cartId,
-        timingId,
         paymentMethod,
         userId,
-        addressId,
-        pickupDate,
       });
       return id;
     } catch (error) {
@@ -55,10 +54,46 @@ export class RequestService {
     }
   }
 
+  public async schedule(
+    { addressId, pickupDate, timingId, id }: ScheduleArgs,
+    userId: string,
+  ) {
+    try {
+      const request = await this.findById(id);
+      if (!request) {
+        throw new NotFoundException('unable to find request');
+      }
+      if (!request.revoked) {
+        throw new BadRequestException('request is already scheduled');
+      }
+      await this.requestRepository
+        .createQueryBuilder('request')
+        .update()
+        .set({ addressId, pickupDate, timingId, revoked: false })
+        .where('id = :id', { id })
+        .andWhere('userId = :userId', { userId })
+        .execute();
+      return id;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async findByCartId(cartId: string) {
     try {
       const request = await this.requestRepository.findOne({
         where: { cartId },
+      });
+      return request;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async findById(id: string) {
+    try {
+      const request = await this.requestRepository.findOne({
+        where: { id },
       });
       return request;
     } catch (error) {

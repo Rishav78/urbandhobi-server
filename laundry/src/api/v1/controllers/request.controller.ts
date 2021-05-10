@@ -16,8 +16,8 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JWTAuthGuard } from 'src/lib/guards';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators/user.decorator';
-import { RaiseDTO, RovokeDTO } from '../dto';
-import { RaiseEvent, Cart, Request } from '../typings';
+import { RaiseDTO, RovokeDTO, ScheduleDTO } from '../dto';
+import { RaiseEvent, Cart, Request, ScheduleEvent } from '../typings';
 
 @Controller()
 export class RequestController {
@@ -47,7 +47,7 @@ export class RequestController {
   public async raise(
     @UserContext() { id: userId }: User,
     @Body(ValidationPipe)
-    { timingId, paymentMethod, addressId, pickupDate }: RaiseDTO,
+    { paymentMethod }: RaiseDTO,
   ) {
     try {
       const cart = await this.cartClient
@@ -62,9 +62,30 @@ export class RequestController {
           cartId,
           userId,
           paymentMethod,
-          timingId,
-          addressId,
+        })
+        .toPromise<Request>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('schedule/:id')
+  public async schedule(
+    @UserContext() { id: userId }: User,
+    @Param(ValidationPipe) { id }: RovokeDTO,
+    @Body(ValidationPipe)
+    { timingId, addressId, pickupDate }: ScheduleDTO,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, ScheduleEvent>('UD.Laundry.Request.Schedule', {
+          id,
           pickupDate,
+          addressId,
+          timingId,
+          userId,
         })
         .toPromise<string>();
       return res;

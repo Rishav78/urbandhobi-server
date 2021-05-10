@@ -3,10 +3,15 @@ export * from './address';
 export interface RaiseEvent {
   userId: string;
   cartId: string;
-  timingId: number;
   paymentMethod: 'cod';
-  addressId: string;
+}
+
+export interface ScheduleEvent {
+  id: string;
+  userId: string;
   pickupDate: Date;
+  timingId: number;
+  addressId: string;
 }
 
 export interface Cart {
