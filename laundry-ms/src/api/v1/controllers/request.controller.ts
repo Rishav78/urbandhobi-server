@@ -11,7 +11,7 @@ import {
   Payload,
   RmqContext,
 } from '@nestjs/microservices';
-import { RaiseDTO, RequestsDTO } from '../dto';
+import { RaiseDTO, RequestsDTO, RevokeDTO } from '../dto';
 import { Address } from '../typings';
 import { RequestService } from '../services';
 
@@ -69,6 +69,42 @@ export class RequestController {
     try {
       const res = await this.requestService.findRequests(userId);
       return res;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Laundry.Request.Revoke')
+  public async revoke(
+    @Payload(ValidationPipe)
+    { userId, id }: RevokeDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      await this.requestService.revoke(id, userId);
+      return true;
+    } catch (error) {
+      throw error;
+    } finally {
+      channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('UD.Laundry.Request.Delete')
+  public async delete(
+    @Payload(ValidationPipe)
+    { userId, id }: RevokeDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      await this.requestService.delete(id, userId);
+      return true;
     } catch (error) {
       throw error;
     } finally {

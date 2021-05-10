@@ -74,4 +74,33 @@ export class RequestService {
       throw error;
     }
   }
+
+  public async revoke(id: string, userId: string) {
+    try {
+      await this.requestRepository
+        .createQueryBuilder('request')
+        .update()
+        .set({ revoked: true })
+        .where('id = :id', { id })
+        .andWhere('userId = :userId', { userId })
+        .execute();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async delete(id: string, userId: string) {
+    try {
+      await this.requestRepository
+        .createQueryBuilder('request')
+        .softDelete()
+        .where('id = :id', { id })
+        .andWhere('userId = :userId', { userId })
+        .execute();
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

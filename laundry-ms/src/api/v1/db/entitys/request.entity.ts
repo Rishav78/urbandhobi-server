@@ -30,6 +30,9 @@ export class Request {
   @Column('enum', { enum: ['cod'], default: 'cod', nullable: false })
   paymentMethod: string;
 
+  @Column('boolean', { nullable: false, default: false })
+  revoked: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

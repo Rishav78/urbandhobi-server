@@ -1,10 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Logger,
   NotFoundException,
+  Param,
+  Patch,
   Put,
   UseGuards,
   ValidationPipe,
@@ -13,7 +16,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { JWTAuthGuard } from 'src/lib/guards';
 import { User } from 'src/typings';
 import { UserContext } from '../decorators/user.decorator';
-import { RaiseDTO } from '../dto';
+import { RaiseDTO, RovokeDTO } from '../dto';
 import { RaiseEvent, Cart, Request } from '../typings';
 
 @Controller()
@@ -64,6 +67,50 @@ export class RequestController {
           pickupDate,
         })
         .toPromise<string>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('revoke/:id')
+  public async revoke(
+    @Param() { id }: RovokeDTO,
+    @UserContext() { id: userId }: User,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string; id: string }>(
+          'UD.Laundry.Request.Revoke',
+          {
+            userId,
+            id,
+          },
+        )
+        .toPromise<Request[]>();
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Delete(':id')
+  public async delete(
+    @Param() { id }: RovokeDTO,
+    @UserContext() { id: userId }: User,
+  ) {
+    try {
+      const res = await this.laundryClient
+        .send<any, { userId: string; id: string }>(
+          'UD.Laundry.Request.Delete',
+          {
+            userId,
+            id,
+          },
+        )
+        .toPromise<Request[]>();
       return res;
     } catch (error) {
       throw error;

@@ -31,3 +31,11 @@ export class RequestsDTO {
   @IsUUID('4', { message: 'invalid user id' })
   userId: string;
 }
+
+export class RevokeDTO {
+  @IsUUID('4', { message: 'invalid request id' })
+  id: string;
+
+  @IsUUID('4', { message: 'invalid user id' })
+  userId: string;
+}

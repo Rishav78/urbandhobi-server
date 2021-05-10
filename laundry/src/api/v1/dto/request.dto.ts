@@ -20,3 +20,8 @@ export class RaiseDTO {
   @IsUUID('4', { message: 'invalid address id' })
   addressId: string;
 }
+
+export class RovokeDTO {
+  @IsUUID('4', { message: 'invalid request id' })
+  id: string;
+}
