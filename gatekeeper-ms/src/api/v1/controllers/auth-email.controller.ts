@@ -13,7 +13,6 @@ import { SignInWithEmailDTO, SignUpWithEmailDTO } from '../dto/auth.dto';
 import { AuthEmailService } from '../services';
 import { HttpException } from 'src/lib/helpers';
 import { TokenManager } from 'src/lib/utils/token-manager';
-import { Authentication } from '../typings';
 
 @Controller()
 export class AuthEmailController {
@@ -26,14 +25,15 @@ export class AuthEmailController {
   @UseFilters(new ExceptionFilter())
   @MessagePattern('UD.GateKeeper.SignInWithEmail')
   async signInWithEmail(
-    @Payload(new ValidationPipe()) { email, password }: SignInWithEmailDTO,
+    @Payload(new ValidationPipe())
+    { email, password, role }: SignInWithEmailDTO,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
 
     try {
-      const tokens = this.emailService.signIn(email, password);
+      const tokens = this.emailService.signIn(email, password, role);
       return tokens;
     } catch (error) {
       throw error;
@@ -45,7 +45,8 @@ export class AuthEmailController {
   @UseFilters(new ExceptionFilter())
   @MessagePattern('UD.GateKeeper.SignUpWithEmail')
   async signUpWithEmail(
-    @Payload(new ValidationPipe()) { email, password }: SignUpWithEmailDTO,
+    @Payload(new ValidationPipe())
+    { email, password, role }: SignUpWithEmailDTO,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
@@ -57,7 +58,7 @@ export class AuthEmailController {
         );
       }
       // generate token
-      const tokens = await this.emailService.create(email, password);
+      const tokens = await this.emailService.create(email, password, role);
 
       // notify user creation to user microservice
       this.userClient.emit('UD.User.Create', { email });
