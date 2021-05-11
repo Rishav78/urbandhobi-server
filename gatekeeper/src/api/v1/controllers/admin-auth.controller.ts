@@ -3,13 +3,13 @@ import {
   Controller,
   Inject,
   Logger,
-  Param,
   Put,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { handleMSError } from 'src/lib/helpers';
-import { SignupParamsDTO } from '../dto/admin-auth.dto';
+import { SignupQueryDTO } from '../dto/admin-auth.dto';
 import { SignUpWithEmailDTO } from '../dto/auth.dto';
 
 @Controller('admin')
@@ -21,7 +21,7 @@ export class AdminAuthController {
 
   @Put(['signup'])
   public async signUpWithEmail(
-    @Param(ValidationPipe) { role }: SignupParamsDTO,
+    @Query(ValidationPipe) { role }: SignupQueryDTO,
     @Body(ValidationPipe) { email, password }: SignUpWithEmailDTO,
   ) {
     try {
