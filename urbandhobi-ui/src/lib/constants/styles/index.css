@@ -1,3 +1,30 @@
 .full-height {
   height: 100vh;
 }
+
+.screen-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* page navigation animation */
+.fade-enter,
+.fade-appear {
+  opacity: 0;
+  z-index: 1;
+}
+.fade-appear-active,
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+.fade-exist {
+  opacity: 1;
+}
+.fade-exist.fade-exist-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
