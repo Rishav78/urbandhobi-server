@@ -7,10 +7,15 @@ import "../index.css";
 import { submitButton } from "./style";
 import { Link } from "react-router-dom";
 import { emailRegex, passwordRegex } from "@urbandhobi/lib/helpers";
+import { useAuth } from "@urbandhobi/hooks";
+import { useHistory } from "react-router-dom";
 
 export const SignIn = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
+  const history = useHistory();
+
+  const { signin } = useAuth();
 
   const isValidEmail = email === null ? null : emailRegex.test(email);
   const isValidPassword =
@@ -29,6 +34,15 @@ export const SignIn = () => {
     },
     []
   );
+
+  const onSubmit = useCallback(() => {
+    if (!isValidPassword || !isValidEmail) {
+      return alert("provide required ");
+    }
+    console.log(email, password);
+    signin();
+    history.replace("/");
+  }, [email, password, isValidPassword, isValidEmail, signin, history]);
 
   return (
     <div className="screen-container authentication-block">
@@ -106,7 +120,12 @@ export const SignIn = () => {
             </div>
           </div>
           <div className="authentication-form-field">
-            <Button size="large" style={submitButton} color="primary">
+            <Button
+              onClick={onSubmit}
+              size="large"
+              style={submitButton}
+              color="primary"
+            >
               <span>Login</span>
             </Button>
           </div>

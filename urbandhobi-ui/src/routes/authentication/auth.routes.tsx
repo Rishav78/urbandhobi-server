@@ -26,8 +26,9 @@ export const AuthRoutes = () => {
           }}
         /> */}
         <Switch>
-          <Route path="/signin" component={SignIn} />
-          <Route path="/signup" component={SignUp} />
+          <Route exact path="/signin" component={SignIn} />
+          <Route exact path="/signup" component={SignUp} />
+          <Route component={() => <h1>not exist</h1>} />
         </Switch>
       </div>
     </div>
