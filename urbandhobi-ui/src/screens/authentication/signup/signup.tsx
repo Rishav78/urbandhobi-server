@@ -1,12 +1,43 @@
-import { InputAdornment, TextField, Checkbox, Button } from "@material-ui/core";
+import { InputAdornment, TextField, Button } from "@material-ui/core";
 import signupLogo from "@urbandhobi/assets/images/signup.jpg";
 import { Email, Lock } from "@material-ui/icons";
 import "./index.css";
 import "../index.css";
 import { submitButton } from "./style";
 import { Link } from "react-router-dom";
+import { ChangeEvent, useCallback, useState } from "react";
+import { emailRegex, passwordRegex } from "@urbandhobi/lib/helpers";
 
 export const SignUp = () => {
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<string | null>(null);
+
+  const isValidEmail = email === null ? null : emailRegex.test(email);
+  const isValidPassword =
+    password === null ? null : passwordRegex.test(password);
+
+  const onEmailChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setEmail(event.target.value);
+    },
+    []
+  );
+
+  const onPasswordChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setPassword(event.target.value);
+    },
+    []
+  );
+
+  const onConfirmChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setConfirm(event.target.value);
+    },
+    []
+  );
+
   return (
     <div className="screen-container authentication-block">
       <div className="authentication-action">
@@ -45,6 +76,9 @@ export const SignUp = () => {
                   </InputAdornment>
                 ),
               }}
+              error={!(isValidEmail === null || isValidEmail)}
+              value={email}
+              onChange={onEmailChange}
               className="field"
               label="Email (required)*"
             />
@@ -58,6 +92,10 @@ export const SignUp = () => {
                   </InputAdornment>
                 ),
               }}
+              type="password"
+              error={!(isValidPassword === null || isValidPassword)}
+              value={password}
+              onChange={onPasswordChange}
               className="field"
               label="Password (required)*"
             />
@@ -71,6 +109,10 @@ export const SignUp = () => {
                   </InputAdornment>
                 ),
               }}
+              type="password"
+              error={confirm !== null && confirm === ""}
+              value={confirm}
+              onChange={onConfirmChange}
               className="field"
               label="Confirm Password (required)*"
             />

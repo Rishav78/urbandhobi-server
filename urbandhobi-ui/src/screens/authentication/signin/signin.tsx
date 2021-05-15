@@ -1,3 +1,4 @@
+import { useCallback, useState, ChangeEvent } from "react";
 import { InputAdornment, TextField, Checkbox, Button } from "@material-ui/core";
 import signinLogo from "@urbandhobi/assets/images/signin.jpg";
 import { Email, Lock } from "@material-ui/icons";
@@ -5,8 +6,30 @@ import "./index.css";
 import "../index.css";
 import { submitButton } from "./style";
 import { Link } from "react-router-dom";
+import { emailRegex, passwordRegex } from "@urbandhobi/lib/helpers";
 
 export const SignIn = () => {
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+
+  const isValidEmail = email === null ? null : emailRegex.test(email);
+  const isValidPassword =
+    password === null ? null : passwordRegex.test(password);
+
+  const onEmailChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setEmail(event.target.value);
+    },
+    []
+  );
+
+  const onPasswordChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setPassword(event.target.value);
+    },
+    []
+  );
+
   return (
     <div className="screen-container authentication-block">
       <div className="authentication-action">
@@ -45,6 +68,9 @@ export const SignIn = () => {
                   </InputAdornment>
                 ),
               }}
+              error={!(isValidEmail === null || isValidEmail)}
+              value={email}
+              onChange={onEmailChange}
               className="field"
               label="Email (required)*"
             />
@@ -58,6 +84,10 @@ export const SignIn = () => {
                   </InputAdornment>
                 ),
               }}
+              type="password"
+              error={!(isValidPassword === null || isValidPassword)}
+              value={password}
+              onChange={onPasswordChange}
               className="field"
               label="Password (required)*"
             />
