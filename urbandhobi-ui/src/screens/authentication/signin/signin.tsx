@@ -1,5 +1,5 @@
 import React from "react";
-import "@urbandhobi/lib/constants/styles";
+import "@urbandhobi/lib/constants/styles/index.css";
 
 export const SignIn = () => {
   return (

@@ -14,8 +14,11 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
+    "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
+    "paths": {
+      "@urbandhobi/*": ["./src/*"],
+    },
     "moduleResolution": "node",
-    "baseUrl": "./",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
