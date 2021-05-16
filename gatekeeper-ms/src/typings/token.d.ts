@@ -1,3 +1,4 @@
+import { Role } from 'src/api/v1/typings';
 import { SignInMethod } from './auth';
 
 export interface Token {
@@ -9,7 +10,7 @@ export interface Token {
 export interface TokenPayload {
   method: SignInMethod;
   id: string;
-  admin: boolean;
+  role: Role;
 }
 
 export interface RefreshTokenPayload extends TokenPayload {

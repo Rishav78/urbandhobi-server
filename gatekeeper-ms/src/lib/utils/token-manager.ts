@@ -1,10 +1,11 @@
 import * as jwt from 'jsonwebtoken';
+import { Role } from 'src/api/v1/typings';
 import { SignInMethod } from 'src/typings/auth';
 import { RefreshTokenPayload, Token, TokenPayload } from 'src/typings/token';
 
 export interface SignAccessArgs {
   method: SignInMethod;
-  admin: boolean;
+  role: Role;
   id: string;
 }
 
