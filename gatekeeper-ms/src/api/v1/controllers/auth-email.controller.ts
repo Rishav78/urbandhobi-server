@@ -107,10 +107,7 @@ export class AuthEmailController {
 
       switch (payload.method) {
         case 'email': {
-          const { email } = await this.emailService.findById(payload.id);
-          const user = await this.userClient
-            .send('UD.User.FindByEmail', { email })
-            .toPromise();
+          const user = await this.emailService.findById(payload.id);
           return user;
         }
         default:

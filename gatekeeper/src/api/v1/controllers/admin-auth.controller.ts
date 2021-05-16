@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Inject,
@@ -25,6 +26,11 @@ export class AdminAuthController {
     @Body(ValidationPipe) { email, password }: SignUpWithEmailDTO,
   ) {
     try {
+      if (role === 'USER') {
+        throw new BadRequestException(
+          'use /api/:version/auth/signup for user signup',
+        );
+      }
       const id = await this.authClient
         .send('UD.GateKeeper.SignUpWithEmail', {
           email,
