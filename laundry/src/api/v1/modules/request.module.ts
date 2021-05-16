@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { RequestController } from '../controllers';
+import { AdminRequestController, RequestController } from '../controllers';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ import { RequestController } from '../controllers';
       },
     ]),
   ],
-  controllers: [RequestController],
+  controllers: [RequestController, AdminRequestController],
   providers: [],
 })
 export class RequestModule {}

@@ -13,8 +13,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { JWTAuthGuard } from 'src/lib/guards';
+import { JWTAuthGuard, RoleGuard } from 'src/lib/guards';
 import { User } from 'src/typings';
+import { Roles } from '../decorators';
 import { UserContext } from '../decorators/user.decorator';
 import { RaiseDTO, RovokeDTO, ScheduleDTO } from '../dto';
 import { RaiseEvent, Cart, Request, ScheduleEvent } from '../typings';
@@ -27,7 +28,8 @@ export class RequestController {
     @Inject('CART_SERVICE') private readonly cartClient: ClientProxy,
   ) {}
 
-  @UseGuards(JWTAuthGuard)
+  @Roles('USER')
+  @UseGuards(JWTAuthGuard, RoleGuard)
   @Get()
   public async getRequests(@UserContext() { id: userId }: User) {
     try {
@@ -42,7 +44,8 @@ export class RequestController {
     }
   }
 
-  @UseGuards(JWTAuthGuard)
+  @Roles('USER')
+  @UseGuards(JWTAuthGuard, RoleGuard)
   @Put('raise')
   public async raise(
     @UserContext() { id: userId }: User,

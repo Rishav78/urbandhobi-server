@@ -103,7 +103,10 @@ export class RequestService {
 
   public async findRequests(userId: string) {
     try {
-      const requests = await this.requestRepository.find({ where: { userId } });
+      const requests = await this.requestRepository.find({
+        where: { userId },
+        order: { createdAt: 'DESC' },
+      });
       return requests;
     } catch (error) {
       throw error;
