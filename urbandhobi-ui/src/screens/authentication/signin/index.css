@@ -1,0 +1,17 @@
+.authentication-form-heading {
+  margin: 0;
+}
+
+.authentication-form-field {
+  margin: 30px 0px;
+}
+
+.field {
+  width: 100%;
+  font-size: 12px;
+}
+
+.submit-button {
+  padding: 8px 20px;
+  background-color: pink;
+}
