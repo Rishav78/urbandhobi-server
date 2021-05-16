@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose';
+import { ROLES } from '../../../../lib/constants';
+import { Role } from '../../typings';
 
 export const EmailSchema = new mongoose.Schema(
   {
@@ -21,6 +23,11 @@ export const EmailSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ROLES,
+      default: 'USER',
+    },
     active: {
       type: Boolean,
       default: true,
@@ -40,6 +47,7 @@ export const EmailSchema = new mongoose.Schema(
 export interface Email {
   email: string;
   password: string;
+  role?: Role;
   active?: boolean;
   isDeleted?: boolean;
 }

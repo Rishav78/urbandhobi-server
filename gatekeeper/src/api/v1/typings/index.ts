@@ -1,0 +1,1 @@
+export type Role = 'USER' | 'DELIVERY_MANAGER' | 'ADMIN';
