@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { TokenManager } from 'src/lib/utils/token-manager';
 import { Email, EmailModelSchema, name } from '../db/models';
+import { Role } from '../typings';
 
 @Injectable()
 export class AuthEmailService {
@@ -13,19 +14,19 @@ export class AuthEmailService {
     private readonly jwtService: TokenManager,
   ) {}
 
-  public async create(email: string, password: string) {
+  public async create(email: string, password: string, role: Role = 'USER') {
     try {
       const hash = await bcrypt.hash(password, await bcrypt.genSalt(10));
-      const obj: Email = { email, password: hash };
+      const obj: Email = { email, role, password: hash };
       const user = await new this.EmailModel(obj).save();
       const tokens = await this.jwtService.signAccessAndRefresh(
         {
-          admin: false,
+          role,
           id: user._id,
           method: 'email',
         },
         {
-          admin: false,
+          role,
           id: user._id,
           method: 'email',
           email: user.email,
@@ -37,7 +38,7 @@ export class AuthEmailService {
     }
   }
 
-  public async signIn(email: string, password: string) {
+  public async signIn(email: string, password: string, role: Role = 'USER') {
     try {
       const user = await this.EmailModel.findOne({ email });
       if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -48,12 +49,12 @@ export class AuthEmailService {
 
       const tokens = await this.jwtService.signAccessAndRefresh(
         {
-          admin: false,
+          role,
           id: user._id,
           method: 'email',
         },
         {
-          admin: false,
+          role,
           id: user._id,
           method: 'email',
           email: user.email,

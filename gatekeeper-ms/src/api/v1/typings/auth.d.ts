@@ -1,3 +1,5 @@
+export type Role = 'USER' | 'DELIVERY_MANAGER' | 'ADMIN';
+
 export interface Authentication {
   _id: string;
   email: string;
